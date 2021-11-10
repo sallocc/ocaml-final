@@ -1,0 +1,13 @@
+(library
+  (name main)
+  (modules main)
+  (libraries 
+    core)
+  (preprocess (pps ppx_jane)))
+
+(executable
+  (name connectFour)
+  (modules connectFour)
+  (libraries
+    main
+    core))

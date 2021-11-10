@@ -1,0 +1,11 @@
+(rule
+  (target assignment4.zip)
+  (deps 
+    src/lib.ml
+    src/ngrams.ml
+    src/dune
+    tests/tests.ml
+    tests/dune
+  )
+  (action
+    (run zip -R assignment4.zip %{deps})))
