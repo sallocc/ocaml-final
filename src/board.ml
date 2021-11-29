@@ -42,7 +42,7 @@ let makeMove (board: gameboard) (col: move): gameboard Option =
 
 let rec getAvailableSpace (board: gameboard) (col: move) (currRow: int): int * int =
     if getPos col currRow board = 0 then (col, currRow) else
-    getAvailableSpace board col (currRow + 1)
+    getAvailableSpace board col (currRow + 1);;
 
 let isGameOver (board: gameboard): bool * int =
     if gameOverHelp board 1 then (true, 1) else
@@ -50,3 +50,5 @@ let isGameOver (board: gameboard): bool * int =
     (false, 0);;
 
 let gameOverHelp (board: gameboard) (player: int): bool =
+    (* Run through a search of the board by checking diagonals, horizontals,
+    and verticals for four-in-a-rows based on the given player's number. *)
