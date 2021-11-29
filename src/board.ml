@@ -4,10 +4,14 @@ type gameboard = int list list
 
 type move = int
 
-let currPlayer = int ref;
+let currPlayer = 1 ref;
 
-let getPos (currX: int) (currY: int) (xPos: int) (yPos: int) (board: gameboard): int = 
-    let firstRows, laterRows = List.split_n board yPos int
+let getPos (xPos: int) (yPos: int) (board: gameboard): int = 
+    let firstRows, laterRows = List.split_n board yPos in
+    let currRow = List.hd_exn laterRows in
+    let firstPositions, laterPositions = List.split_n currRow xPos in
+    List.hd_exn laterPositions;;
+
 
 
 let makeMove (board: gameboard) (col: move): gameboard Option =
