@@ -4,6 +4,8 @@ type gameboard = int list list
 
 type move = int
 
+let currPlayer = int ref;
+
 let getPos (currX: int) (currY: int) (xPos: int) (yPos: int) (board: gameboard): int = 
     let firstRows, laterRows = List.split_n board yPos int
 
