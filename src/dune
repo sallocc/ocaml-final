@@ -1,6 +1,6 @@
 (library
-  (name board)
-  (modules board)
+  (name board lib)
+  (modules board lib)
   (libraries 
     core)
   (preprocess (pps ppx_jane)))
@@ -10,6 +10,7 @@
   (modules main)
   (libraries
     board
+    lib
     core))
     ; dream))
     

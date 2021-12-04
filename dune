@@ -2,6 +2,7 @@
   (target final.zip)
   (deps 
     src/board.ml
+    src/lib.ml
     src/dune
     tests/tests.ml
     tests/dune
