@@ -6,7 +6,15 @@ type gameboard = int list list
 
 type move = int
 
-let currPlayer = ref 1
+let empty = [[0; 0; 0; 0; 0; 0; 0];
+             [0; 0; 0; 0; 0; 0; 0];
+             [0; 0; 0; 0; 0; 0; 0];
+             [0; 0; 0; 0; 0; 0; 0];
+             [0; 0; 0; 0; 0; 0; 0];
+             [0; 0; 0; 0; 0; 0; 0]
+             ];
+
+let currPlayer = ref 1;
 
 
 (* Given a board and an (x,y) position, it will return the value at
@@ -16,7 +24,7 @@ let getPos (xPos: int) (yPos: int) (board: gameboard): int =
     let firstRows, laterRows = List.split_n board yPos in
     let currRow = List.hd_exn laterRows in
     let firstPositions, laterPositions = List.split_n currRow xPos in
-    List.hd_exn laterPositions
+    List.hd_exn laterPositions;;
 
 let rec changePos (currX: int) (currY: int) (xPos: int) (yPos: int) (newVal: int) (board: gameboard): gameboard =
     if xPos < 0 || xPos > 6 || yPos < 0 || yPos > 6 then failwith "Invalid position" else
