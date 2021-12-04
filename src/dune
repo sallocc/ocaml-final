@@ -1,21 +1,21 @@
 (library
-  (name main)
-  (modules main)
+  (name board)
+  (modules board)
   (libraries 
     core)
   (preprocess (pps ppx_jane)))
 
 (executable
-  (name connectFour)
-  (modules connectFour)
+  (name main)
+  (modules main)
   (libraries
-    main
-    core
-    dream))
+    board
+    core))
+    ; dream))
     
-(rule
- (targets template.ml)
- (deps template.eml.ml)
- (action (run dream_eml %{deps} --workspace %{workspace_root})))
+; (rule
+;  (targets template.ml)
+;  (deps template.eml.ml)
+;  (action (run dream_eml %{deps} --workspace %{workspace_root})))
 
-(data_only_dirs _esy esy.lock lib node_modules)    
+; (data_only_dirs _esy esy.lock lib node_modules)    

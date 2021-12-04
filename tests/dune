@@ -3,5 +3,5 @@
   (libraries
     core
     ounit2
-    lib)
+    board)
   (preprocess (pps bisect_ppx)))
