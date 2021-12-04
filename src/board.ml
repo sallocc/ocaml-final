@@ -52,3 +52,60 @@ let isGameOver (board: gameboard): bool * int =
 let gameOverHelp (board: gameboard) (player: int): bool =
     (* Run through a search of the board by checking diagonals, horizontals,
     and verticals for four-in-a-rows based on the given player's number. *)
+
+let isGameOver (board : gameboard) : bool * int =
+    let horizontal board =
+        List.fold board ~init:false ~f:(fun acc x ->
+            acc
+            ||
+            match
+            List.fold x ~init:0 ~f:(fun acc y ->
+                if acc = 4 then 4 else if y = !currPlayer then acc + 1 else 0)
+            with
+            | 4 -> true
+            | _ -> false)
+    in
+    let vertical board =
+        let c = [ 0; 1; 2; 3; 4; 5; 6 ] in
+        List.fold c ~init:false ~f:(fun acc i ->
+            acc
+            ||
+            match
+            List.fold board ~init:0 ~f:(fun acc x ->
+                if acc = 4 then 4
+                else if List.nth_exn x i = !currPlayer then acc + 1
+                else 0)
+            with
+            | 4 -> true
+            | _ -> false)
+    in
+    let diagonal1 board =
+        List.foldi board ~init:false ~f:(fun i acc y ->
+            if i < 3 then acc
+            else
+            acc
+            || List.foldi y ~init:false ~f:(fun j acc2 x ->
+                    if j > 3 then acc2
+                    else
+                        acc2
+                        || x = !currPlayer
+                        && x = List.nth_exn (List.nth_exn board (i - 1)) (j + 1)
+                        && x = List.nth_exn (List.nth_exn board (i - 2)) (j + 2)
+                        && x = List.nth_exn (List.nth_exn board (i - 3)) (j + 3)))
+    in
+    let diagonal2 board =
+        List.foldi board ~init:false ~f:(fun i acc y ->
+            if i > 3 then acc
+            else
+            acc
+            || List.foldi y ~init:false ~f:(fun j acc2 x ->
+                    if j > 3 then acc2
+                    else
+                        acc2
+                        || x = !currPlayer
+                        && x = List.nth_exn (List.nth_exn board (i + 1)) (j + 1)
+                        && x = List.nth_exn (List.nth_exn board (i + 2)) (j + 2)
+                        && x = List.nth_exn (List.nth_exn board (i + 3)) (j + 3)))
+    in
+    (horizontal board || vertical board || diagonal1 board || diagonal2 board ,!currPlayer)
+      
