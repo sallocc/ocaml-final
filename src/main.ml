@@ -1,3 +1,5 @@
+
+  
 let show_form ?message request =
   <html>
   <body>
@@ -9,6 +11,7 @@ let show_form ?message request =
 %   end;
 
     <%s! Dream.form_tag ~action:"/" request %>
+      
       <button name="col1" type=submit style="width:75px; height:75px;">
         <img src="https://toppng.com/uploads/preview/red-circle-1155276042606ekqvli9k.png"
         style="width:50px; height:50px;">
@@ -38,6 +41,7 @@ let show_form ?message request =
         style="width:50px; height:50px;">
       </button> </br>
       
+      
     </form>
 
   </body>
@@ -56,8 +60,20 @@ let () =
     Dream.post "/"
       (fun request ->
         match%lwt Dream.form request with
-        | `Ok ["message", message] ->
-          Dream.html (show_form ~message request)
+        | `Ok ["col1", _] ->
+          Dream.html (show_form ~message:"Clicked column 1" request)
+        | `Ok ["col2", _] ->
+          Dream.html (show_form ~message:"Clicked column 2" request)
+        | `Ok ["col3", _] -> 
+          Dream.html (show_form ~message:"Clicked column 3" request)
+        | `Ok ["col4", _] ->
+          Dream.html (show_form ~message:"Clicked column 4" request)
+        | `Ok ["col5", _] ->
+          Dream.html (show_form ~message:"Clicked column 5" request)
+        | `Ok ["col6", _] ->
+          Dream.html (show_form ~message:"Clicked column 6" request)
+        | `Ok ["col7", _] ->
+          Dream.html (show_form ~message:"Clicked column 7" request)
         | _ ->
           Dream.empty `Bad_Request);
 
