@@ -18,7 +18,7 @@ let show_form ?message request =
 
 %   let redImage = "https://toppng.com/uploads/preview/red-circle-1155276042606ekqvli9k.png" in
 %   let yellowImage = "https://www.pngfind.com/pngs/m/147-1479400_png-point-yellow-circle-transparent-background-png-download.png" in
-%   let grayImage = "https://www.pngfind.com/pngs/m/180-1807233_location-dot-grey-grey-colour-circle-png-transparent.png" in
+%   let grayImage = "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Location_dot_grey.svg/1200px-Location_dot_grey.svg.png" in
 
     <%s! Dream.form_tag ~action:"/" request %>
       
@@ -27,19 +27,19 @@ let show_form ?message request =
         style="width:50px; height:50px; margin:0px;">
       </button>
       <button name="col2" type=submit style="width:75px; height:75px; margin:0px">
-        <img src=<%s grayImage%>
+        <img src=<%s yellowImage%>
         style="width:50px; height:50px; margin:0px;">
       </button>
       <button name="col3" type=submit style="width:75px; height:75px; margin:0px">
-        <img src="https://toppng.com/uploads/preview/red-circle-1155276042606ekqvli9k.png"
+        <img src=<%s redImage%>
         style="width:50px; height:50px; margin:0px;">
       </button>
       <button name="col4" type=submit style="width:75px; height:75px; margin:0px">
-        <img src="https://toppng.com/uploads/preview/red-circle-1155276042606ekqvli9k.png"
+        <img src=<%s redImage%>
         style="width:50px; height:50px; margin:0px;">
       </button>
       <button name="col5" type=submit style="width:75px; height:75px; margin:0px">
-        <img src="https://toppng.com/uploads/preview/red-circle-1155276042606ekqvli9k.png"
+        <img src=<%s grayImage%>
         style="width:50px; height:50px; margin:0px;">
       </button>
       <button name="col6" type=submit style="width:75px; height:75px; margin:0px">
@@ -47,7 +47,7 @@ let show_form ?message request =
         style="width:50px; height:50px; margin:0px;">
       </button>
       <button name="col7" type=submit style="width:75px; height:75px; margin:0px">
-        <img src="https://toppng.com/uploads/preview/red-circle-1155276042606ekqvli9k.png"
+        <img src=<%s yellowImage%>
         style="width:50px; height:50px; margin:0px;">
       </button> </br>
       
@@ -89,4 +89,3 @@ let () =
 
   ]
   @@ Dream.not_found
-  
