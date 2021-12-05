@@ -1,6 +1,5 @@
 open Core
 
-
 let chunks (n : int) (l : 'a list) : 'a list list =
   if n <= 0 then invalid_arg "invalid input n"
   else
@@ -31,6 +30,7 @@ module Randomness = struct
   let int n = Base.Random.int n
   (* let int _ = 0 *)
 end
+
 let sample (module R : Randomness) (b : 'a Bag.t) : 'a option =
   let bag_to_list (b : 'a Bag.t) (l : 'a list) : 'a list =
     Bag.fold b ~init:l ~f:(fun acc a -> a :: acc)
@@ -39,7 +39,6 @@ let sample (module R : Randomness) (b : 'a Bag.t) : 'a option =
   else List.nth (bag_to_list b []) (R.int @@ Bag.length b)
 
 module N_grams (Random : Randomness) (Token : Map.Key) = struct
-
   module Token_list_map : Map.S with type Key.t = Token.t list =
   Map.Make (struct
     type t = Token.t list [@@deriving compare, sexp]
@@ -144,7 +143,6 @@ let sanitize (s : string) : string option =
              (Char.( <= ) x 'z' && Char.( >= ) x 'a')
              || (Char.( <= ) x '9' && Char.( >= ) x '0')))
 
-
 let split_space_sanitize (l : string list) : string list =
   List.map l ~f:(fun x ->
       String.split_on_chars ~on:[ ' '; '\t'; '\n' ] x
@@ -192,35 +190,52 @@ let most_frequent_grams (map : ('a, int, 'b) Map_intf.Map.t) (n : int)
   in
   list_to_map map []
 
-  (* AI Module *)
-let frist_move yx =
-  match yx with
-  | 00 -> 03
-  | 01 -> 02
-  | 02 -> 03
-  | 03 -> 03
-  | 04 -> 03
-  | 05 -> 04
-  | 06 -> 03
+(* AI Module *)
+let player2_frist_move pos =
+  match pos with
+  | 0, 0 -> (0, 3)
+  | 0, 1 -> (0, 2)
+  | 0, 2 -> (0, 3)
+  | 0, 3 -> (0, 3)
+  | 0, 4 -> (0, 3)
+  | 0, 5 -> (0, 4)
+  | 0, 6 -> (0, 3)
   | _ -> invalid_arg "invaid input"
 
 let random_move _ = Random.int 7
 
-let every_other_chunks (n : int) (l : 'a list) : 'a list list =
-  if n <= 0 then invalid_arg "invalid input n"
-  else
-    let rec make_list (n : int) (i : int) (l : 'a list) (new_l : 'a list) :
-        'a list =
-      if n >= i then make_list (n - 1) i l @@ (List.nth_exn l n :: new_l)
-      else new_l
-    in
-    List.mapi
-      ~f:(fun i _ ->
-        if i + n <= List.length l then make_list (i + n - 1) i l [] else [])
-      l
-    |> List.filter ~f:(fun x -> not @@ List.is_empty x)
+let every_other_chunks (n : int) (odd_even : int) (l : 'a list) : 'a list list =
+  chunks n l |> List.filteri ~f:(fun i _ -> i % 2 = odd_even)
 
-let wining_sequence (l : 'a list)
+let wining_sequence (l : 'a list) (winner : int) (n : int) : 'a list list =
+  match (winner, n % 2) with
+  | 1, 1 -> every_other_chunks n 0 l
+  | 1, 0 -> every_other_chunks n 1 l
+  | 2, 1 -> every_other_chunks n 1 l
+  | 2, 0 -> every_other_chunks n 0 l
+  | _ -> invalid_arg "winner has wrong value"
+
+let pair a n =
+  match (a, n) with
+  | (x, _), 1 -> x
+  | (_, y), 2 -> y
+  | _ -> invalid_arg "wrong n"
+
+(* tested correct *)
+let is_valid_move move history =
+  pair (List.unzip history) 1
+  |> List.foldi ~init:true ~f:(fun i acc x ->
+         if
+           x = pair move 1
+           && List.nth_exn (pair (List.unzip history) 2) i = pair move 2
+         then acc && false
+         else acc && true)
+
+(* let check_length (l:'a list) : int =
+   match List.length l with
+   | 0 -> invalid_arg "empty move history"
+   | x -> if x < 6 then x else 5 *)
+
 (* 3 GRAMS: *)
 (* IF AI go second *)
 (* n chunks if ai wins start from begining sample every other sequence *)
@@ -238,120 +253,10 @@ let wining_sequence (l : 'a list)
 (* IF AI go second *)
 (* n chunks if ai wins start from the second move chop off the first, sample every other sequence *)
 (* if user wins start sampling from first move and sample ever other sequences *)
-type gameboard = int list list
-
+let () = Out_channel.write_all "your_file.txt" ~data:"Your text"
 let currPlayer = ref 1
 (* AI takes in the current game move history to decide which move to make
-  if a move is not valid repeat until valid or -1 +1 -2 +2 from the AI's last return.... *)
-let horizontal board =
-  List.fold board ~init:false ~f:(fun acc x ->
-      acc
-      ||
-      match
-        List.fold x ~init:0 ~f:(fun acc y ->
-            if acc = 4 then 4 else if y = !currPlayer then acc + 1 else 0)
-      with
-      | 4 -> true
-      | _ -> false)
-
-let vertical board =
-  let c = [ 0; 1; 2; 3; 4; 5; 6 ] in
-  List.fold c ~init:false ~f:(fun acc i ->
-      acc
-      ||
-      match
-        List.fold board ~init:0 ~f:(fun acc x ->
-            if acc = 4 then 4
-            else if List.nth_exn x i = !currPlayer then acc + 1
-            else 0)
-      with
-      | 4 -> true
-      | _ -> false)
-
-let diagonal1 board =
-  List.foldi board ~init:false ~f:(fun i acc y ->
-      if i < 3 then acc
-      else
-        acc
-        || List.foldi y ~init:false ~f:(fun j acc2 x ->
-               if j > 3 then acc2
-               else
-                 acc2
-                 || x = !currPlayer
-                    && x = List.nth_exn (List.nth_exn board (i - 1)) (j + 1)
-                    && x = List.nth_exn (List.nth_exn board (i - 2)) (j + 2)
-                    && x = List.nth_exn (List.nth_exn board (i - 3)) (j + 3)))
-
-let diagonal2 board =
-  List.foldi board ~init:false ~f:(fun i acc y ->
-      if i > 3 then acc
-      else
-        acc
-        || List.foldi y ~init:false ~f:(fun j acc2 x ->
-               if j > 3 then acc2
-               else
-                 acc2
-                 || x = !currPlayer
-                    && x = List.nth_exn (List.nth_exn board (i + 1)) (j + 1)
-                    && x = List.nth_exn (List.nth_exn board (i + 2)) (j + 2)
-                    && x = List.nth_exn (List.nth_exn board (i + 3)) (j + 3)))
-
-let isGameOver (board : gameboard) : bool * int =
-  let horizontal board =
-    List.fold board ~init:false ~f:(fun acc x ->
-        acc
-        ||
-        match
-          List.fold x ~init:0 ~f:(fun acc y ->
-              if acc = 4 then 4 else if y = !currPlayer then acc + 1 else 0)
-        with
-        | 4 -> true
-        | _ -> false)
-  in
-  let vertical board =
-    let c = [ 0; 1; 2; 3; 4; 5; 6 ] in
-    List.fold c ~init:false ~f:(fun acc i ->
-        acc
-        ||
-        match
-          List.fold board ~init:0 ~f:(fun acc x ->
-              if acc = 4 then 4
-              else if List.nth_exn x i = !currPlayer then acc + 1
-              else 0)
-        with
-        | 4 -> true
-        | _ -> false)
-  in
-  let diagonal1 board =
-    List.foldi board ~init:false ~f:(fun i acc y ->
-        if i < 3 then acc
-        else
-          acc
-          || List.foldi y ~init:false ~f:(fun j acc2 x ->
-                 if j > 3 then acc2
-                 else
-                   acc2
-                   || x = !currPlayer
-                      && x = List.nth_exn (List.nth_exn board (i - 1)) (j + 1)
-                      && x = List.nth_exn (List.nth_exn board (i - 2)) (j + 2)
-                      && x = List.nth_exn (List.nth_exn board (i - 3)) (j + 3)))
-  in
-  let diagonal2 board =
-    List.foldi board ~init:false ~f:(fun i acc y ->
-        if i > 3 then acc
-        else
-          acc
-          || List.foldi y ~init:false ~f:(fun j acc2 x ->
-                 if j > 3 then acc2
-                 else
-                   acc2
-                   || x = !currPlayer
-                      && x = List.nth_exn (List.nth_exn board (i + 1)) (j + 1)
-                      && x = List.nth_exn (List.nth_exn board (i + 2)) (j + 2)
-                      && x = List.nth_exn (List.nth_exn board (i + 3)) (j + 3)))
-  in
-  ( horizontal board || vertical board || diagonal1 board || diagonal2 board,
-    !currPlayer )
+   if a move is not valid repeat until valid or -1 +1 -2 +2 from the AI's last return.... *)
 
 (*
         0 1 2 3 4 5 6
