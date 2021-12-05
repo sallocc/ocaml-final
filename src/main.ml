@@ -1,4 +1,10 @@
-
+(*let () =
+  Dream.run ~interface:"0.0.0.0"
+  @@ Dream.logger
+  @@ Dream.router [
+    Dream.get "/" (fun _ -> Dream.html Playground.welcome);
+  ]
+  @@ Dream.not_found *)
   
 let show_form ?message request =
   <html>
@@ -10,35 +16,39 @@ let show_form ?message request =
       <p>You entered: <b><%s message %>!</b></p>
 %   end;
 
+%   let redImage = "https://toppng.com/uploads/preview/red-circle-1155276042606ekqvli9k.png" in
+%   let yellowImage = "https://www.pngfind.com/pngs/m/147-1479400_png-point-yellow-circle-transparent-background-png-download.png" in
+%   let grayImage = "https://www.pngfind.com/pngs/m/180-1807233_location-dot-grey-grey-colour-circle-png-transparent.png" in
+
     <%s! Dream.form_tag ~action:"/" request %>
       
       <button name="col1" type=submit style="width:75px; height:75px;">
-        <img src="https://toppng.com/uploads/preview/red-circle-1155276042606ekqvli9k.png"
-        style="width:50px; height:50px;">
+        <img src=<%s redImage%>
+        style="width:50px; height:50px; margin:0px;">
       </button>
       <button name="col2" type=submit style="width:75px; height:75px; margin:0px">
-        <img src="https://toppng.com/uploads/preview/red-circle-1155276042606ekqvli9k.png"
-        style="width:50px; height:50px;">
+        <img src=<%s grayImage%>
+        style="width:50px; height:50px; margin:0px;">
       </button>
       <button name="col3" type=submit style="width:75px; height:75px; margin:0px">
         <img src="https://toppng.com/uploads/preview/red-circle-1155276042606ekqvli9k.png"
-        style="width:50px; height:50px;">
+        style="width:50px; height:50px; margin:0px;">
       </button>
       <button name="col4" type=submit style="width:75px; height:75px; margin:0px">
         <img src="https://toppng.com/uploads/preview/red-circle-1155276042606ekqvli9k.png"
-        style="width:50px; height:50px;">
+        style="width:50px; height:50px; margin:0px;">
       </button>
       <button name="col5" type=submit style="width:75px; height:75px; margin:0px">
         <img src="https://toppng.com/uploads/preview/red-circle-1155276042606ekqvli9k.png"
-        style="width:50px; height:50px;">
+        style="width:50px; height:50px; margin:0px;">
       </button>
       <button name="col6" type=submit style="width:75px; height:75px; margin:0px">
-        <img src="https://toppng.com/uploads/preview/red-circle-1155276042606ekqvli9k.png"
-        style="width:50px; height:50px;">
+        <img src=<%s yellowImage%>
+        style="width:50px; height:50px; margin:0px;">
       </button>
       <button name="col7" type=submit style="width:75px; height:75px; margin:0px">
         <img src="https://toppng.com/uploads/preview/red-circle-1155276042606ekqvli9k.png"
-        style="width:50px; height:50px;">
+        style="width:50px; height:50px; margin:0px;">
       </button> </br>
       
       
@@ -79,3 +89,4 @@ let () =
 
   ]
   @@ Dream.not_found
+  
