@@ -253,7 +253,7 @@ let is_valid_move move history =
 (* IF AI go second *)
 (* n chunks if ai wins start from the second move chop off the first, sample every other sequence *)
 (* if user wins start sampling from first move and sample ever other sequences *)
-let () = Out_channel.write_all "your_file.txt" ~data:"Your text"
+let () = Out_channel.write_all "store.txt" ~data:[1;2;3;4]
 let currPlayer = ref 1
 (* AI takes in the current game move history to decide which move to make
    if a move is not valid repeat until valid or -1 +1 -2 +2 from the AI's last return.... *)
