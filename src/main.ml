@@ -17,6 +17,26 @@ let show_form ?message request =
         <img src="https://toppng.com/uploads/preview/red-circle-1155276042606ekqvli9k.png"
         style="width:50px; height:50px;">
       </button>
+      <button name="col3" type=submit style="width:75px; height:75px; margin:0px">
+        <img src="https://toppng.com/uploads/preview/red-circle-1155276042606ekqvli9k.png"
+        style="width:50px; height:50px;">
+      </button>
+      <button name="col4" type=submit style="width:75px; height:75px; margin:0px">
+        <img src="https://toppng.com/uploads/preview/red-circle-1155276042606ekqvli9k.png"
+        style="width:50px; height:50px;">
+      </button>
+      <button name="col5" type=submit style="width:75px; height:75px; margin:0px">
+        <img src="https://toppng.com/uploads/preview/red-circle-1155276042606ekqvli9k.png"
+        style="width:50px; height:50px;">
+      </button>
+      <button name="col6" type=submit style="width:75px; height:75px; margin:0px">
+        <img src="https://toppng.com/uploads/preview/red-circle-1155276042606ekqvli9k.png"
+        style="width:50px; height:50px;">
+      </button>
+      <button name="col7" type=submit style="width:75px; height:75px; margin:0px">
+        <img src="https://toppng.com/uploads/preview/red-circle-1155276042606ekqvli9k.png"
+        style="width:50px; height:50px;">
+      </button> </br>
       
     </form>
 
