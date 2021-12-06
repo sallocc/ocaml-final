@@ -16,6 +16,9 @@ let empty = [[0; 0; 0; 0; 0; 0; 0];
 
 let currPlayer = ref 1
 
+let setPlayer (player:int) =
+    currPlayer := player
+
 type history = int * int list 
 let gameHistory = ref []
 (* history is :: to the front, List.rev before giving to AI *)
@@ -27,7 +30,7 @@ let getPos (xPos: int) (yPos: int) (board: gameboard): int =
     let _, laterRows = List.split_n board yPos in
     let currRow = List.hd_exn laterRows in
     let _, laterPositions = List.split_n currRow xPos in
-    List.hd_exn laterPositions;;
+    List.hd_exn laterPositions
 
 let changeRow (xPos: int) (newVal: int) (row: int list): int list =
     let firstPositions, laterPositions = List.split_n row xPos in

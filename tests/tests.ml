@@ -20,7 +20,7 @@ let test_chunks _ =
   assert_equal [ [ "a"; "b"; "c"; "d" ]; [ "b"; "c"; "d"; "e" ] ]
   @@ chunks 4 a_list;
   assert_equal [ [ "a"; "b"; "c"; "d"; "e" ] ] @@ chunks 5 a_list
-  
+
 let test_invalid_chunks _ =
   let invalid_chunks _ = chunks 0 a_list in
   assert_raises (Invalid_argument "invalid input n") invalid_chunks;
@@ -55,6 +55,7 @@ let exercise1_2_test =
 module Notrandomness = struct
   let int _ = 0
 end
+
 let test_sample _ =
   assert_equal None
   @@
@@ -314,10 +315,7 @@ let test_split_space_sanitize _ =
     ]
   @@ split_space_sanitize
        [ "hello world nihao \t \\t hello kittie abc-aded ~~~123~~~ (crazy)." ];
-       assert_equal
-      []
-  @@ split_space_sanitize
-       [ "~~~~ ~~~~~ ~~~ !!!" ]
+  assert_equal [] @@ split_space_sanitize [ "~~~~ ~~~~~ ~~~ !!!" ]
 
 module Int_Map = Map.Make (Int)
 
@@ -522,195 +520,255 @@ let p2_test =
          "quick_check_sanitize" >:: test_quick_check_sanitize;
        ]
 
+let test_wining_sequence _ =
+  assert_equal [ [ 1; 2; 3 ]; [ 3; 4; 5 ]; [ 5; 6; 7 ] ]
+  @@ wining_sequence [ 1; 2; 3; 4; 5; 6; 7; 8 ] 1 3;
+  assert_equal [ [ 2; 3; 4 ]; [ 4; 5; 6 ]; [ 6; 7; 8 ] ]
+  @@ wining_sequence [ 1; 2; 3; 4; 5; 6; 7; 8 ] 2 3;
+  assert_equal [ [ 2; 3; 4; 5 ]; [ 4; 5; 6; 7 ] ]
+  @@ wining_sequence [ 1; 2; 3; 4; 5; 6; 7; 8 ] 1 4;
+  assert_equal [ [ 1; 2; 3; 4 ]; [ 3; 4; 5; 6 ]; [ 5; 6; 7; 8 ] ]
+  @@ wining_sequence [ 1; 2; 3; 4; 5; 6; 7; 8 ] 2 4
+
+let test_pair _ =
+  assert_equal 1 @@ pair (1, 2) 1;
+  assert_equal 2 @@ pair (1, 2) 2
+
+(*  for coverage purpose*)
+let test_random_move _ = assert_equal 0 @@ (random_move 1 * 0)
+
+let test_player2_frist_move _ =
+  assert_equal (0, 3) @@ player2_frist_move (0, 0);
+  assert_equal (0, 2) @@ player2_frist_move (0, 1);
+  assert_equal (0, 3) @@ player2_frist_move (0, 2);
+  assert_equal (0, 3) @@ player2_frist_move (0, 3);
+  assert_equal (0, 3) @@ player2_frist_move (0, 4);
+  assert_equal (0, 4) @@ player2_frist_move (0, 5);
+  assert_equal (0, 3) @@ player2_frist_move (0, 6)
+
+let test_is_valid_move _ =
+  assert_equal false @@ is_valid_move (0, 0) [ (0, 0) ];
+  assert_equal true @@ is_valid_move (0, 2) [ (0, 0) ]
+
 let new_lib_test =
-  "new lib test" >: test_list 
+  "new lib test"
+  >: test_list
+       [
+         "winning sequence" >:: test_wining_sequence;
+         "pair" >:: test_pair;
+         "random_move" >:: test_random_move;
+         "player2_frist_move" >:: test_player2_frist_move;
+         "test_is_valid_move" >:: test_is_valid_move;
+       ]
+
+let gameOverBoard1 =
   [
-  "winning sequence" >:: test_wining_sequence;
-  "pair" >:: test_pair;
-  "random_move" >:: test_random_move;
-  "player2_frist_move" >:: test_player2_frist_move;
-]
+    [ 0; 1; 1; 1; 1; 0; 0 ];
+    [ 0; 2; 2; 2; 0; 0; 0 ];
+    [ 0; 0; 0; 0; 0; 0; 0 ];
+    [ 0; 0; 0; 0; 0; 0; 0 ];
+    [ 0; 0; 0; 0; 0; 0; 0 ];
+    [ 0; 0; 0; 0; 0; 0; 0 ];
+    [ 0; 0; 0; 0; 0; 0; 0 ];
+  ]
 
-let gameOverBoard1 = [[0; 1; 1; 1; 1; 0; 0];
-                      [0; 2; 2; 2; 0; 0; 0];
-                      [0; 0; 0; 0; 0; 0; 0];
-                      [0; 0; 0; 0; 0; 0; 0];
-                      [0; 0; 0; 0; 0; 0; 0];
-                      [0; 0; 0; 0; 0; 0; 0];
-                      [0; 0; 0; 0; 0; 0; 0]]
+let gameOverBoard2 =
+  [
+    [ 0; 1; 2; 0; 0; 0; 0 ];
+    [ 0; 1; 2; 0; 0; 0; 0 ];
+    [ 0; 1; 2; 0; 0; 0; 0 ];
+    [ 0; 1; 0; 0; 0; 0; 0 ];
+    [ 0; 0; 0; 0; 0; 0; 0 ];
+    [ 0; 0; 0; 0; 0; 0; 0 ];
+    [ 0; 0; 0; 0; 0; 0; 0 ];
+  ]
 
-let gameOverBoard2 = [[0; 1; 2; 0; 0; 0; 0];
-                      [0; 1; 2; 0; 0; 0; 0];
-                      [0; 1; 2; 0; 0; 0; 0];
-                      [0; 1; 0; 0; 0; 0; 0];
-                      [0; 0; 0; 0; 0; 0; 0];
-                      [0; 0; 0; 0; 0; 0; 0];
-                      [0; 0; 0; 0; 0; 0; 0]]
-                      
-let gameOverBoard3 = [[0; 1; 2; 1; 2; 0; 0];
-                      [0; 2; 1; 2; 2; 0; 0];
-                      [0; 0; 0; 1; 1; 0; 0];
-                      [0; 0; 0; 0; 1; 0; 0];
-                      [0; 0; 0; 0; 0; 0; 0];
-                      [0; 0; 0; 0; 0; 0; 0];
-                      [0; 0; 0; 0; 0; 0; 0]]
-                      
-let gameOverBoard4 = [[0; 1; 2; 2; 2; 2; 0];
-                      [0; 1; 1; 0; 0; 0; 0];
-                      [0; 1; 0; 0; 0; 0; 0];
-                      [0; 0; 0; 0; 0; 0; 0];
-                      [0; 0; 0; 0; 0; 0; 0];
-                      [0; 0; 0; 0; 0; 0; 0];
-                      [0; 0; 0; 0; 0; 0; 0]]
+let gameOverBoard3 =
+  [
+    [ 0; 1; 2; 1; 2; 0; 0 ];
+    [ 0; 2; 1; 2; 2; 0; 0 ];
+    [ 0; 0; 0; 1; 1; 0; 0 ];
+    [ 0; 0; 0; 0; 1; 0; 0 ];
+    [ 0; 0; 0; 0; 0; 0; 0 ];
+    [ 0; 0; 0; 0; 0; 0; 0 ];
+    [ 0; 0; 0; 0; 0; 0; 0 ];
+  ]
+let gameOverBoard4 =
+  [
+    [ 0; 1; 2; 2; 2; 2; 0 ];
+    [ 0; 1; 1; 0; 0; 0; 0 ];
+    [ 0; 1; 0; 0; 0; 0; 0 ];
+    [ 0; 0; 0; 0; 0; 0; 0 ];
+    [ 0; 0; 0; 0; 0; 0; 0 ];
+    [ 0; 0; 0; 0; 0; 0; 0 ];
+    [ 0; 0; 0; 0; 0; 0; 0 ];
+  ]
 
-let game_over_basic _ = 
-  assert_equal (true, 1) @@ isGameOver gameOverBoard1;
-  assert_equal (true, 1) @@ isGameOver gameOverBoard2;
-  assert_equal (true, 1) @@ isGameOver gameOverBoard3;
-  assert_equal (true, 2) @@ isGameOver gameOverBoard4;
-;;
+let game_over_basic _ =
+  setPlayer 1; assert_equal (true, 1) @@ isGameOver gameOverBoard1;
+  setPlayer 1; assert_equal (true, 1) @@ isGameOver gameOverBoard2;
+  setPlayer 1; assert_equal (true, 1) @@ isGameOver gameOverBoard3;
+  setPlayer 2; assert_equal (true, 2) @@ isGameOver gameOverBoard4
 
 (* Actual game played with myself *)
-let gameOverBoard5 = [[1; 2; 1; 1; 2; 1; 1];
-                      [2; 2; 1; 2; 1; 2; 2];
-                      [1; 1; 1; 2; 2; 1; 1];
-                      [0; 2; 2; 1; 2; 1; 2];
-                      [0; 0; 0; 0; 0; 2; 1];
-                      [0; 0; 0; 0; 0; 0; 2];
-                      [0; 0; 0; 0; 0; 0; 0]]
-                      
-let gameOverBoard6 = [[1; 2; 1; 1; 2; 1; 1];
-                      [2; 2; 1; 2; 1; 2; 2];
-                      [1; 1; 1; 2; 2; 1; 1];
-                      [0; 2; 2; 1; 2; 1; 1];
-                      [0; 0; 0; 0; 2; 2; 0];
-                      [0; 0; 0; 0; 0; 0; 0];
-                      [0; 0; 0; 0; 0; 0; 0]]
+let gameOverBoard5 =
+  [
+    [ 1; 2; 1; 1; 2; 1; 1 ];
+    [ 2; 2; 1; 2; 1; 2; 2 ];
+    [ 1; 1; 1; 2; 2; 1; 1 ];
+    [ 0; 2; 2; 1; 2; 1; 2 ];
+    [ 0; 0; 0; 0; 0; 2; 1 ];
+    [ 0; 0; 0; 0; 0; 0; 2 ];
+    [ 0; 0; 0; 0; 0; 0; 0 ];
+  ]
 
-let gameOverBoard7 = [[1; 2; 1; 1; 2; 1; 1];
-                      [2; 2; 1; 2; 1; 2; 2];
-                      [1; 1; 1; 2; 2; 1; 1];
-                      [1; 2; 2; 1; 2; 1; 2];
-                      [0; 0; 0; 0; 2; 2; 1];
-                      [0; 0; 0; 0; 0; 0; 0];
-                      [0; 0; 0; 0; 0; 0; 0]]
-                      
+let gameOverBoard6 =
+  [
+    [ 1; 2; 1; 1; 2; 1; 1 ];
+    [ 2; 2; 1; 2; 1; 2; 2 ];
+    [ 1; 1; 1; 2; 2; 1; 1 ];
+    [ 0; 2; 2; 1; 2; 1; 1 ];
+    [ 0; 0; 0; 0; 2; 2; 0 ];
+    [ 0; 0; 0; 0; 0; 0; 0 ];
+    [ 0; 0; 0; 0; 0; 0; 0 ];
+  ]
+
+let gameOverBoard7 =
+  [
+    [ 1; 2; 1; 1; 2; 1; 1 ];
+    [ 2; 2; 1; 2; 1; 2; 2 ];
+    [ 1; 1; 1; 2; 2; 1; 1 ];
+    [ 1; 2; 2; 1; 2; 1; 2 ];
+    [ 0; 0; 0; 0; 2; 2; 1 ];
+    [ 0; 0; 0; 0; 0; 0; 0 ];
+    [ 0; 0; 0; 0; 0; 0; 0 ];
+  ]
+
 let game_over_complex _ =
-  assert_equal (true, 2) @@ isGameOver gameOverBoard5;
-  assert_equal (true, 1) @@ isGameOver gameOverBoard6;
-  assert_equal (true, 1) @@ isGameOver gameOverBoard7;
-;;
+  setPlayer 2; assert_equal (true, 2) @@ isGameOver gameOverBoard5;
+  setPlayer 1; assert_equal (true, 1) @@ isGameOver gameOverBoard6;
+  setPlayer 1; assert_equal (true, 1) @@ isGameOver gameOverBoard7
 
-let moveBoard1 = [[0; 1; 2; 2; 2; 0; 0];
-                  [0; 1; 1; 0; 0; 0; 0];
-                  [0; 1; 2; 0; 0; 0; 0];
-                  [0; 2; 1; 0; 0; 0; 0];
-                  [0; 1; 2; 0; 0; 0; 0];
-                  [0; 2; 1; 0; 0; 0; 0];
-                  [0; 1; 0; 0; 0; 0; 0]]
-                  
-let moveBoard1' = [[0; 1; 2; 2; 2; 0; 0];
-                  [0; 1; 1; 1; 0; 0; 0];
-                  [0; 1; 2; 0; 0; 0; 0];
-                  [0; 2; 1; 0; 0; 0; 0];
-                  [0; 1; 2; 0; 0; 0; 0];
-                  [0; 2; 1; 0; 0; 0; 0];
-                  [0; 1; 0; 0; 0; 0; 0]]
-                  
-let moveBoard1'' = [[0; 1; 2; 2; 2; 0; 0];
-                  [0; 1; 1; 1; 2; 0; 0];
-                  [0; 1; 2; 0; 0; 0; 0];
-                  [0; 2; 1; 0; 0; 0; 0];
-                  [0; 1; 2; 0; 0; 0; 0];
-                  [0; 2; 1; 0; 0; 0; 0];
-                  [0; 1; 0; 0; 0; 0; 0]]
-                  
-let moveBoard2 = [[0; 1; 2; 2; 2; 1; 0];
-                  [0; 1; 1; 0; 1; 2; 0];
-                  [0; 1; 2; 0; 2; 1; 0];
-                  [0; 2; 1; 0; 2; 1; 0];
-                  [0; 1; 2; 0; 1; 2; 0];
-                  [0; 2; 1; 0; 2; 2; 0];
-                  [0; 1; 2; 0; 1; 1; 0]]
-                      
+let moveBoard1 =
+  [
+    [ 0; 1; 2; 2; 2; 0; 0 ];
+    [ 0; 1; 1; 0; 0; 0; 0 ];
+    [ 0; 1; 2; 0; 0; 0; 0 ];
+    [ 0; 2; 1; 0; 0; 0; 0 ];
+    [ 0; 1; 2; 0; 0; 0; 0 ];
+    [ 0; 2; 1; 0; 0; 0; 0 ];
+    [ 0; 1; 0; 0; 0; 0; 0 ];
+  ]
+
+let moveBoard1' =
+  [
+    [ 0; 1; 2; 2; 2; 0; 0 ];
+    [ 0; 1; 1; 1; 0; 0; 0 ];
+    [ 0; 1; 2; 0; 0; 0; 0 ];
+    [ 0; 2; 1; 0; 0; 0; 0 ];
+    [ 0; 1; 2; 0; 0; 0; 0 ];
+    [ 0; 2; 1; 0; 0; 0; 0 ];
+    [ 0; 1; 0; 0; 0; 0; 0 ];
+  ]
+
+let moveBoard1'' =
+  [
+    [ 0; 1; 2; 2; 2; 0; 0 ];
+    [ 0; 1; 1; 1; 2; 0; 0 ];
+    [ 0; 1; 2; 0; 0; 0; 0 ];
+    [ 0; 2; 1; 0; 0; 0; 0 ];
+    [ 0; 1; 2; 0; 0; 0; 0 ];
+    [ 0; 2; 1; 0; 0; 0; 0 ];
+    [ 0; 1; 0; 0; 0; 0; 0 ];
+  ]
+
+let moveBoard2 =
+  [
+    [ 0; 1; 2; 2; 2; 1; 0 ];
+    [ 0; 1; 1; 0; 1; 2; 0 ];
+    [ 0; 1; 2; 0; 2; 1; 0 ];
+    [ 0; 2; 1; 0; 2; 1; 0 ];
+    [ 0; 1; 2; 0; 1; 2; 0 ];
+    [ 0; 2; 1; 0; 2; 2; 0 ];
+    [ 0; 1; 2; 0; 1; 1; 0 ];
+  ]
+
 let make_move_invalid _ =
   assert_equal None @@ makeMove moveBoard1 1;
   assert_equal None @@ makeMove moveBoard1 1;
   assert_equal None @@ makeMove moveBoard1 2;
   assert_equal None @@ makeMove moveBoard1 4;
-  assert_equal None @@ makeMove moveBoard1 5;
-;;
+  assert_equal None @@ makeMove moveBoard1 5
 
 let make_move_valid _ =
   assert_equal (Some moveBoard1') @@ makeMove moveBoard1 3;
-  assert_equal (Some moveBoard1'') @@ makeMove moveBoard1' 4;
-;;
+  assert_equal (Some moveBoard1'') @@ makeMove moveBoard1' 4
 
-let changeBoard1 = [[0; 1; 2; 2; 2; 1; 0];
-                    [0; 1; 1; 0; 1; 2; 0];
-                    [0; 1; 2; 0; 2; 1; 0];
-                    [0; 2; 1; 0; 2; 1; 0];
-                    [0; 1; 2; 0; 1; 2; 0];
-                    [0; 2; 1; 0; 2; 2; 0];
-                    [0; 1; 2; 0; 1; 1; 0]]
-                    
-let changeBoard1' = [[0; 1; 2; 2; 2; 1; 0];
-                    [0; 1; 1; 0; 1; 2; 0];
-                    [0; 1; 2; 0; 2; 1; 0];
-                    [0; 2; 1; 1; 2; 1; 0];
-                    [0; 1; 2; 0; 1; 2; 0];
-                    [0; 2; 1; 0; 2; 2; 0];
-                    [0; 1; 2; 0; 1; 1; 0]]
-                    
-let changeBoard1'' = [[0; 1; 2; 2; 2; 1; 0];
-                      [0; 1; 1; 0; 1; 2; 0];
-                      [0; 1; 2; 0; 2; 1; 0];
-                      [0; 2; 1; 1; 2; 1; 0];
-                      [0; 1; 2; 0; 1; 2; 0];
-                      [0; 2; 1; 0; 2; 2; 0];
-                      [0; 1; 2; 0; 1; 1; 2]]
+let changeBoard1 =
+  [
+    [ 0; 1; 2; 2; 2; 1; 0 ];
+    [ 0; 1; 1; 0; 1; 2; 0 ];
+    [ 0; 1; 2; 0; 2; 1; 0 ];
+    [ 0; 2; 1; 0; 2; 1; 0 ];
+    [ 0; 1; 2; 0; 1; 2; 0 ];
+    [ 0; 2; 1; 0; 2; 2; 0 ];
+    [ 0; 1; 2; 0; 1; 1; 0 ];
+  ]
+
+let changeBoard1' =
+  [
+    [ 0; 1; 2; 2; 2; 1; 0 ];
+    [ 0; 1; 1; 0; 1; 2; 0 ];
+    [ 0; 1; 2; 0; 2; 1; 0 ];
+    [ 0; 2; 1; 1; 2; 1; 0 ];
+    [ 0; 1; 2; 0; 1; 2; 0 ];
+    [ 0; 2; 1; 0; 2; 2; 0 ];
+    [ 0; 1; 2; 0; 1; 1; 0 ];
+  ]
+
+let changeBoard1'' =
+  [
+    [ 0; 1; 2; 2; 2; 1; 0 ];
+    [ 0; 1; 1; 0; 1; 2; 0 ];
+    [ 0; 1; 2; 0; 2; 1; 0 ];
+    [ 0; 2; 1; 1; 2; 1; 0 ];
+    [ 0; 1; 2; 0; 1; 2; 0 ];
+    [ 0; 2; 1; 0; 2; 2; 0 ];
+    [ 0; 1; 2; 0; 1; 1; 2 ];
+  ]
 
 let change_position _ =
   assert_equal changeBoard1' @@ changePos 0 0 3 3 1 changeBoard1;
-  assert_equal changeBoard1'' @@ changePos 0 0 6 6 2 changeBoard1';
-  
-;;
+  assert_equal changeBoard1'' @@ changePos 0 0 6 6 2 changeBoard1'
 
-let test_chunks _ =
-  assert_equal [] @@ chunks 6 a_list;
-  assert_equal [ [ "a" ]; [ "b" ]; [ "c" ]; [ "d" ]; [ "e" ] ]
-  @@ chunks 1 a_list;
-  assert_equal [ [ "a"; "b" ]; [ "b"; "c" ]; [ "c"; "d" ]; [ "d"; "e" ] ]
-  @@ chunks 2 a_list;
-  assert_equal [ [ "a"; "b"; "c" ]; [ "b"; "c"; "d" ]; [ "c"; "d"; "e" ] ]
-  @@ chunks 3 a_list;
-  assert_equal [ [ "a"; "b"; "c"; "d" ]; [ "b"; "c"; "d"; "e" ] ]
-  @@ chunks 4 a_list;
-  assert_equal [ [ "a"; "b"; "c"; "d"; "e" ] ] @@ chunks 5 a_list
+let set_player _ =
+  setPlayer 1; assert_equal (!currPlayer) @@ 1;
+  setPlayer 2; assert_equal (!currPlayer) @@ 2
 
 let board_test =
-  "Board tests" >: test_list [
-    "Game over basic" >:: game_over_basic;
-    "Game over complex" >:: game_over_complex;
-    "Make move invalid" >:: make_move_invalid;
-    "Make move valid" >:: make_move_valid;
-    "Change position" >:: change_position;
-  ]
-  
-  
+  "Board tests"
+  >: test_list
+       [
+         "Game over basic" >:: game_over_basic;
+         "Game over complex" >:: game_over_complex;
+         "Make move invalid" >:: make_move_invalid;
+         "Make move valid" >:: make_move_valid;
+         "Change position" >:: change_position;
+         "Set player" >:: set_player;
+       ]
+
 let series =
   "Assignment4 P1 & P2 Tests"
   >::: [
-        (* old lib test  *)
+         (* old lib test  *)
          exercise1_2_test;
          exercise3_4_test;
          exercise5_test;
          exercise6_test;
          my_test;
          p2_test;
-        
          (* new lib test  *)
-         new_list_test;
+         new_lib_test;
          board_test;
        ]
 
