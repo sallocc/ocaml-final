@@ -5,6 +5,7 @@
 open Core
 open OUnit2
 open Lib
+open Board
 
 let a_list = [ "a"; "b"; "c"; "d"; "e" ]
 
@@ -522,6 +523,19 @@ let p2_test =
          "quick_check_sanitize" >:: test_quick_check_sanitize;
        ]
 
+
+
+let board_test =
+  "Board tests" >: test_list [
+    "Game over basic" >:: game_over_basic;
+    "Game over complex" >:: game_over_complex;
+    "Make move invalid" >:: make_move_invalid;
+    "Make move valid" >:: make_move_valid;
+    "Change position" >:: change_position;
+    
+  ]
+  
+  
 let series =
   "Assignment4 P1 & P2 Tests"
   >::: [
@@ -531,6 +545,7 @@ let series =
          exercise6_test;
          my_test;
          p2_test;
+         board_test;
        ]
 
 let () = run_test_tt_main series
