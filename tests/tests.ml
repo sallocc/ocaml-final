@@ -524,6 +524,57 @@ let p2_test =
        ]
 
 
+let gameOverBoard1 = [[0; 1; 1; 1; 1; 0; 0];
+                      [0; 2; 2; 2; 0; 0; 0];
+                      [0; 0; 0; 0; 0; 0; 0];
+                      [0; 0; 0; 0; 0; 0; 0];
+                      [0; 0; 0; 0; 0; 0; 0];
+                      [0; 0; 0; 0; 0; 0; 0];
+                      [0; 0; 0; 0; 0; 0; 0]]
+
+let gameOverBoard2 = [[0; 1; 2; 0; 0; 0; 0];
+                      [0; 1; 2; 0; 0; 0; 0];
+                      [0; 1; 2; 0; 0; 0; 0];
+                      [0; 1; 0; 0; 0; 0; 0];
+                      [0; 0; 0; 0; 0; 0; 0];
+                      [0; 0; 0; 0; 0; 0; 0];
+                      [0; 0; 0; 0; 0; 0; 0]]
+                      
+let gameOverBoard3 = [[0; 1; 2; 1; 2; 0; 0];
+                      [0; 2; 1; 2; 2; 0; 0];
+                      [0; 0; 0; 1; 1; 0; 0];
+                      [0; 0; 0; 0; 1; 0; 0];
+                      [0; 0; 0; 0; 0; 0; 0];
+                      [0; 0; 0; 0; 0; 0; 0];
+                      [0; 0; 0; 0; 0; 0; 0]]
+                      
+let gameOverBoard4 = [[0; 1; 2; 2; 2; 2; 0];
+                      [0; 1; 1; 0; 0; 0; 0];
+                      [0; 1; 0; 0; 0; 0; 0];
+                      [0; 0; 0; 0; 0; 0; 0];
+                      [0; 0; 0; 0; 0; 0; 0];
+                      [0; 0; 0; 0; 0; 0; 0];
+                      [0; 0; 0; 0; 0; 0; 0]]
+
+let game_over_basic _ = 
+  assert_equal (true, 1) @@ isGameOver gameOverBoard1;
+  assert_equal (true, 1) @@ isGameOver gameOverBoard2;
+  assert_equal (true, 1) @@ isGameOver gameOverBoard3;
+  assert_equal (true, 2) @@ isGameOver gameOverBoard4;
+;;
+
+let game_over_complex _ =
+;;
+
+let make_move_invalid _ =
+;;
+
+let make_move_valid _ =
+;;
+
+let change_position _ =
+;;
+
 
 let board_test =
   "Board tests" >: test_list [
@@ -532,7 +583,6 @@ let board_test =
     "Make move invalid" >:: make_move_invalid;
     "Make move valid" >:: make_move_valid;
     "Change position" >:: change_position;
-    
   ]
   
   
