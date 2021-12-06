@@ -589,12 +589,21 @@ let gameOverBoard7 = [[1; 2; 1; 1; 2; 1; 1];
                       [0; 0; 0; 0; 0; 0; 0]]
                       
 let game_over_complex _ =
-  assert_equal (true, 2) isGameOver gameOverBoard5;
-  assert_equal (true, 1) isGameOver gameOverBoard6;
-  assert_equal (true, 1) isGameOver gameOverBoard7;
+  assert_equal (true, 2) @@ isGameOver gameOverBoard5;
+  assert_equal (true, 1) @@ isGameOver gameOverBoard6;
+  assert_equal (true, 1) @@ isGameOver gameOverBoard7;
 ;;
 
+let moveBoard1 = [[0; 1; 2; 2; 2; 0; 0];
+                  [0; 1; 1; 0; 0; 0; 0];
+                  [0; 1; 2; 0; 0; 0; 0];
+                  [0; 2; 1; 0; 0; 0; 0];
+                  [0; 1; 2; 0; 0; 0; 0];
+                  [0; 2; 1; 0; 0; 0; 0];
+                  [0; 1; 0; 0; 0; 0; 0]]
+                      
 let make_move_invalid _ =
+  assert_equal None @@ makeMove moveBoard1 1;
 ;;
 
 let make_move_valid _ =
