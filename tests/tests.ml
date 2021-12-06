@@ -20,7 +20,7 @@ let test_chunks _ =
   assert_equal [ [ "a"; "b"; "c"; "d" ]; [ "b"; "c"; "d"; "e" ] ]
   @@ chunks 4 a_list;
   assert_equal [ [ "a"; "b"; "c"; "d"; "e" ] ] @@ chunks 5 a_list
-
+  
 let test_invalid_chunks _ =
   let invalid_chunks _ = chunks 0 a_list in
   assert_raises (Invalid_argument "invalid input n") invalid_chunks;
@@ -508,7 +508,6 @@ let test_quick_check_sanitize _ =
           (match sanitize rand_string with Some x -> x | None -> "")
           'z')
 
-(* no input words dropped *)
 let p2_test =
   "A4 P2 tests"
   >: test_list
@@ -523,6 +522,14 @@ let p2_test =
          "quick_check_sanitize" >:: test_quick_check_sanitize;
        ]
 
+let new_lib_test =
+  "new lib test" >: test_list 
+  [
+  "winning sequence" >:: test_wining_sequence;
+  "pair" >:: test_pair;
+  "random_move" >:: test_random_move;
+  "player2_frist_move" >:: test_player2_frist_move;
+]
 
 let gameOverBoard1 = [[0; 1; 1; 1; 1; 0; 0];
                       [0; 2; 2; 2; 0; 0; 0];
@@ -669,6 +676,17 @@ let change_position _ =
   
 ;;
 
+let test_chunks _ =
+  assert_equal [] @@ chunks 6 a_list;
+  assert_equal [ [ "a" ]; [ "b" ]; [ "c" ]; [ "d" ]; [ "e" ] ]
+  @@ chunks 1 a_list;
+  assert_equal [ [ "a"; "b" ]; [ "b"; "c" ]; [ "c"; "d" ]; [ "d"; "e" ] ]
+  @@ chunks 2 a_list;
+  assert_equal [ [ "a"; "b"; "c" ]; [ "b"; "c"; "d" ]; [ "c"; "d"; "e" ] ]
+  @@ chunks 3 a_list;
+  assert_equal [ [ "a"; "b"; "c"; "d" ]; [ "b"; "c"; "d"; "e" ] ]
+  @@ chunks 4 a_list;
+  assert_equal [ [ "a"; "b"; "c"; "d"; "e" ] ] @@ chunks 5 a_list
 
 let board_test =
   "Board tests" >: test_list [
@@ -683,12 +701,16 @@ let board_test =
 let series =
   "Assignment4 P1 & P2 Tests"
   >::: [
+        (* old lib test  *)
          exercise1_2_test;
          exercise3_4_test;
          exercise5_test;
          exercise6_test;
          my_test;
          p2_test;
+        
+         (* new lib test  *)
+         new_list_test;
          board_test;
        ]
 
