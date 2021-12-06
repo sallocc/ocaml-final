@@ -1,11 +1,66 @@
-(*let () =
-  Dream.run ~interface:"0.0.0.0"
-  @@ Dream.logger
-  @@ Dream.router [
-    Dream.get "/" (fun _ -> Dream.html Playground.welcome);
-  ]
-  @@ Dream.not_found *)
-  
+let show_color ?color request =
+  <html>
+  <body>
+    
+    <%s! Dream.form_tag ~action:"/" request %>
+    
+%   let redImage = "https://toppng.com/uploads/preview/red-circle-1155276042606ekqvli9k.png" in
+%   let yellowImage = "https://www.pngfind.com/pngs/m/147-1479400_png-point-yellow-circle-transparent-background-png-download.png" in
+%   let grayImage = "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Location_dot_grey.svg/1200px-Location_dot_grey.svg.png" in
+%    begin match color with
+%   | Some 0 -> 
+            <button name="col1" type=submit style="width:75px; height:75px;">
+              <img src=<%s grayImage%>
+              style="width:50px; height:50px; margin:0px;">
+            </button>
+%   | Some 1 -> 
+            <button name="col1" type=submit style="width:75px; height:75px;">
+              <img src=<%s redImage%>
+              style="width:50px; height:50px; margin:0px;">
+            </button>
+%   | Some 2 -> 
+            <button name="col1" type=submit style="width:75px; height:75px;">
+              <img src=<%s yellowImage%>
+              style="width:50px; height:50px; margin:0px;">
+            </button>
+%   | None -> 
+            </br>
+%   | _ -> 
+          </br>
+            
+%   end;
+     </form>
+   </body>
+   </html>
+   
+
+
+let rec displayRow row request =
+%   let redImage = "https://toppng.com/uploads/preview/red-circle-1155276042606ekqvli9k.png" in
+%   let yellowImage = "https://www.pngfind.com/pngs/m/147-1479400_png-point-yellow-circle-transparent-background-png-download.png" in
+%   let grayImage = "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Location_dot_grey.svg/1200px-Location_dot_grey.svg.png" in
+%   begin match board with
+%   | [] -> 
+            </br>
+%   | "0" :: tl -> 
+            <button name="col1" type=submit style="width:75px; height:75px;">
+              <img src=<%s grayImage%>
+              style="width:50px; height:50px; margin:0px;">
+            </button>
+%           displayRow tl request
+%   | "1" :: tl -> 
+            <button name="col1" type=submit style="width:75px; height:75px;">
+              <img src=<%s redImage%>
+              style="width:50px; height:50px; margin:0px;">
+            </button>
+%           displayRow tl request
+%   | "2" :: tl -> 
+            <button name="col1" type=submit style="width:75px; height:75px;">
+              <img src=<%s yellowImage%>
+              style="width:50px; height:50px; margin:0px;">
+            </button>
+%           displayRow tl request
+
 let show_form ?message request =
   <html>
   <body>
@@ -65,7 +120,7 @@ let () =
 
     Dream.get  "/"
       (fun request ->
-        Dream.html (show_form request));
+        Dream.html (displayRow [0; 1; 2; 0; 0; 1; 2] request));
 
     Dream.post "/"
       (fun request ->
