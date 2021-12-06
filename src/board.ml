@@ -26,7 +26,7 @@ let gameHistory = ref []
 (* Given a board and an (x,y) position, it will return the value at
 that position in the board. *)
 let getPos (xPos: int) (yPos: int) (board: gameboard): int = 
-    if xPos < 0 || xPos > 6 || yPos < 0 || yPos > 6 then failwith "Invalid position" else
+    if xPos < 0 || xPos > 6 || yPos < 0 || yPos > 5 then failwith "Invalid position" else
     let _, laterRows = List.split_n board yPos in
     let currRow = List.hd_exn laterRows in
     let _, laterPositions = List.split_n currRow xPos in
@@ -39,7 +39,7 @@ let changeRow (xPos: int) (newVal: int) (row: int list): int list =
     | _ :: tl -> List.append firstPositions (newVal :: tl)
 
 let rec changePos (currX: int) (currY: int) (xPos: int) (yPos: int) (newVal: int) (board: gameboard): gameboard =
-    if xPos < 0 || xPos > 6 || yPos < 0 || yPos > 6 then failwith "Invalid position" else
+    if xPos < 0 || xPos > 6 || yPos < 0 || yPos > 5 then failwith "Invalid position" else
     match board with
     | hd :: tl -> if currY < yPos then hd :: (changePos (currX + 1) (currY + 1) xPos yPos newVal tl)
                   else (changeRow xPos newVal hd) :: tl
@@ -54,7 +54,7 @@ let rec getAvailableSpace (board: gameboard) (col: move) (currRow: int): int * i
 
 (* history is updated as well*)
 let makeMove (board: gameboard) (col: move) : gameboard option =
-    if getPos col 6 board <> 0 then None else
+    if getPos col 5 board <> 0 then None else
     let x, y = getAvailableSpace board col 0 in
     gameHistory := (x,y) :: !gameHistory;
     Some (changePos 0 0 x y !currPlayer board)

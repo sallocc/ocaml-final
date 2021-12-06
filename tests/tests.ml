@@ -569,7 +569,7 @@ let gameOverBoard1 =
     [ 0; 0; 0; 0; 0; 0; 0 ];
     [ 0; 0; 0; 0; 0; 0; 0 ];
     [ 0; 0; 0; 0; 0; 0; 0 ];
-    [ 0; 0; 0; 0; 0; 0; 0 ];
+    (* [ 0; 0; 0; 0; 0; 0; 0 ]; *)
   ]
 
 let gameOverBoard2 =
@@ -580,7 +580,7 @@ let gameOverBoard2 =
     [ 0; 1; 0; 0; 0; 0; 0 ];
     [ 0; 0; 0; 0; 0; 0; 0 ];
     [ 0; 0; 0; 0; 0; 0; 0 ];
-    [ 0; 0; 0; 0; 0; 0; 0 ];
+    (* [ 0; 0; 0; 0; 0; 0; 0 ]; *)
   ]
 
 let gameOverBoard3 =
@@ -591,7 +591,7 @@ let gameOverBoard3 =
     [ 0; 0; 0; 0; 1; 0; 0 ];
     [ 0; 0; 0; 0; 0; 0; 0 ];
     [ 0; 0; 0; 0; 0; 0; 0 ];
-    [ 0; 0; 0; 0; 0; 0; 0 ];
+    (* [ 0; 0; 0; 0; 0; 0; 0 ]; *)
   ]
 let gameOverBoard4 =
   [
@@ -601,7 +601,7 @@ let gameOverBoard4 =
     [ 0; 0; 0; 0; 0; 0; 0 ];
     [ 0; 0; 0; 0; 0; 0; 0 ];
     [ 0; 0; 0; 0; 0; 0; 0 ];
-    [ 0; 0; 0; 0; 0; 0; 0 ];
+    (* [ 0; 0; 0; 0; 0; 0; 0 ]; *)
   ]
 
 let game_over_basic _ =
@@ -619,7 +619,7 @@ let gameOverBoard5 =
     [ 0; 2; 2; 1; 2; 1; 2 ];
     [ 0; 0; 0; 0; 0; 2; 1 ];
     [ 0; 0; 0; 0; 0; 0; 2 ];
-    [ 0; 0; 0; 0; 0; 0; 0 ];
+    (* [ 0; 0; 0; 0; 0; 0; 0 ]; *)
   ]
 
 let gameOverBoard6 =
@@ -630,7 +630,7 @@ let gameOverBoard6 =
     [ 0; 2; 2; 1; 2; 1; 1 ];
     [ 0; 0; 0; 0; 2; 2; 0 ];
     [ 0; 0; 0; 0; 0; 0; 0 ];
-    [ 0; 0; 0; 0; 0; 0; 0 ];
+    (* [ 0; 0; 0; 0; 0; 0; 0 ]; *)
   ]
 
 let gameOverBoard7 =
@@ -641,7 +641,7 @@ let gameOverBoard7 =
     [ 1; 2; 2; 1; 2; 1; 2 ];
     [ 0; 0; 0; 0; 2; 2; 1 ];
     [ 0; 0; 0; 0; 0; 0; 0 ];
-    [ 0; 0; 0; 0; 0; 0; 0 ];
+    (* [ 0; 0; 0; 0; 0; 0; 0 ]; *)
   ]
 
 let game_over_complex _ =
@@ -657,7 +657,7 @@ let moveBoard1 =
     [ 0; 2; 1; 0; 0; 0; 0 ];
     [ 0; 1; 2; 0; 0; 0; 0 ];
     [ 0; 2; 1; 0; 0; 0; 0 ];
-    [ 0; 1; 0; 0; 0; 0; 0 ];
+    (* [ 0; 1; 0; 0; 0; 0; 0 ]; *)
   ]
 
 let moveBoard1' =
@@ -668,7 +668,7 @@ let moveBoard1' =
     [ 0; 2; 1; 0; 0; 0; 0 ];
     [ 0; 1; 2; 0; 0; 0; 0 ];
     [ 0; 2; 1; 0; 0; 0; 0 ];
-    [ 0; 1; 0; 0; 0; 0; 0 ];
+    (* [ 0; 1; 0; 0; 0; 0; 0 ]; *)
   ]
 
 let moveBoard1'' =
@@ -679,7 +679,7 @@ let moveBoard1'' =
     [ 0; 2; 1; 0; 0; 0; 0 ];
     [ 0; 1; 2; 0; 0; 0; 0 ];
     [ 0; 2; 1; 0; 0; 0; 0 ];
-    [ 0; 1; 0; 0; 0; 0; 0 ];
+    (* [ 0; 1; 0; 0; 0; 0; 0 ]; *)
   ]
 
 let moveBoard2 =
@@ -690,19 +690,21 @@ let moveBoard2 =
     [ 0; 2; 1; 0; 2; 1; 0 ];
     [ 0; 1; 2; 0; 1; 2; 0 ];
     [ 0; 2; 1; 0; 2; 2; 0 ];
-    [ 0; 1; 2; 0; 1; 1; 0 ];
+    (* [ 0; 1; 2; 0; 1; 1; 0 ]; *)
   ]
 
 let make_move_invalid _ =
-  assert_equal None @@ makeMove moveBoard1 1;
-  assert_equal None @@ makeMove moveBoard1 1;
-  assert_equal None @@ makeMove moveBoard1 2;
-  assert_equal None @@ makeMove moveBoard1 4;
-  assert_equal None @@ makeMove moveBoard1 5
+  setPlayer 1; assert_equal None @@ makeMove moveBoard1 1;
+  setPlayer 1; assert_equal None @@ makeMove moveBoard1 2;
+  setPlayer 1; assert_equal None @@ makeMove moveBoard2 1;
+  setPlayer 1; assert_equal None @@ makeMove moveBoard2 2;
+  setPlayer 1; assert_equal None @@ makeMove moveBoard2 4;
+  setPlayer 1; assert_equal None @@ makeMove moveBoard2 5
+
 
 let make_move_valid _ =
-  assert_equal (Some moveBoard1') @@ makeMove moveBoard1 3;
-  assert_equal (Some moveBoard1'') @@ makeMove moveBoard1' 4
+  setPlayer 1; assert_equal (Some moveBoard1') @@ makeMove moveBoard1 3;
+  setPlayer 2; assert_equal (Some moveBoard1'') @@ makeMove moveBoard1' 4
 
 let changeBoard1 =
   [
@@ -712,7 +714,7 @@ let changeBoard1 =
     [ 0; 2; 1; 0; 2; 1; 0 ];
     [ 0; 1; 2; 0; 1; 2; 0 ];
     [ 0; 2; 1; 0; 2; 2; 0 ];
-    [ 0; 1; 2; 0; 1; 1; 0 ];
+    (* [ 0; 1; 2; 0; 1; 1; 0 ]; *)
   ]
 
 let changeBoard1' =
@@ -723,7 +725,7 @@ let changeBoard1' =
     [ 0; 2; 1; 1; 2; 1; 0 ];
     [ 0; 1; 2; 0; 1; 2; 0 ];
     [ 0; 2; 1; 0; 2; 2; 0 ];
-    [ 0; 1; 2; 0; 1; 1; 0 ];
+    (* [ 0; 1; 2; 0; 1; 1; 0 ]; *)
   ]
 
 let changeBoard1'' =
@@ -734,12 +736,12 @@ let changeBoard1'' =
     [ 0; 2; 1; 1; 2; 1; 0 ];
     [ 0; 1; 2; 0; 1; 2; 0 ];
     [ 0; 2; 1; 0; 2; 2; 0 ];
-    [ 0; 1; 2; 0; 1; 1; 2 ];
+    (* [ 0; 1; 2; 0; 1; 1; 2 ]; *)
   ]
 
 let change_position _ =
   assert_equal changeBoard1' @@ changePos 0 0 3 3 1 changeBoard1;
-  assert_equal changeBoard1'' @@ changePos 0 0 6 6 2 changeBoard1'
+  assert_equal changeBoard1'' @@ changePos 0 0 6 5 0 changeBoard1'
 
 let set_player _ =
   setPlayer 1; assert_equal (!currPlayer) @@ 1;
