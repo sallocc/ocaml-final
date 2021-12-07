@@ -1,14 +1,10 @@
-(*
-  Put the tests for lib.ml functions here
-*)
-
 open Core
 open OUnit2
 open Lib
 open Board
 
+(* OLD Lib Test *)
 let a_list = [ "a"; "b"; "c"; "d"; "e" ]
-
 let test_chunks _ =
   assert_equal [] @@ chunks 6 a_list;
   assert_equal [ [ "a" ]; [ "b" ]; [ "c" ]; [ "d" ]; [ "e" ] ]
@@ -112,8 +108,6 @@ let exercise3_4_test =
          "sample''''" >:: test_sample'''';
          "sample'''''" >:: test_sample''''';
        ]
-
-(* module Rat_Eval = Eval (Rat_Data) *)
 
 module N = N_grams (Notrandomness) (Int)
 module Token_list = List_key (Int)
@@ -327,9 +321,6 @@ let test_list_to_map _ =
   assert_equal [] @@ Map.keys Int_Map.empty;
   assert_equal [] @@ Map.data Int_Map.empty
 
-(* let test_most_frequent _ = *)
-(* assert_equal (5,5) @@ most_frequent (Map.keys ee) (Map.data ee) 1 *)
-
 let test_given_word _ =
   assert_equal [ "5" ] @@ given_word [ "1"; "2"; "3"; "4"; "5" ]
 
@@ -520,6 +511,8 @@ let p2_test =
          "quick_check_sanitize" >:: test_quick_check_sanitize;
        ]
 
+(* NEW functions test Lib and Board *)
+
 let test_wining_sequence _ =
   assert_equal [ [ 1; 2; 3 ]; [ 3; 4; 5 ]; [ 5; 6; 7 ] ]
   @@ wining_sequence [ 1; 2; 3; 4; 5; 6; 7; 8 ] 1 3;
@@ -535,7 +528,7 @@ let test_pair _ =
   assert_equal 2 @@ pair (1, 2) 2
 
 (*  for coverage purpose*)
-let test_random_move _ = assert_equal 0 @@ (random_move 1 * 0)
+let test_random_distribution _ = assert_equal 0 @@ (random_distribution 1 * 0)
 
 let test_player2_frist_move _ =
   assert_equal (0, 3) @@ player2_frist_move (0, 0);
@@ -556,7 +549,7 @@ let new_lib_test =
        [
          "winning sequence" >:: test_wining_sequence;
          "pair" >:: test_pair;
-         "random_move" >:: test_random_move;
+         "random_move" >:: test_random_distribution;
          "player2_frist_move" >:: test_player2_frist_move;
          "test_is_valid_move" >:: test_is_valid_move;
        ]

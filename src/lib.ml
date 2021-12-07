@@ -1,5 +1,6 @@
 open Core
 
+(* OLD LIB functions, IGNORE PLEASE same as in A4 *)
 let chunks (n : int) (l : 'a list) : 'a list list =
   if n <= 0 then invalid_arg "invalid input n"
   else
@@ -190,7 +191,20 @@ let most_frequent_grams (map : ('a, int, 'b) Map_intf.Map.t) (n : int)
   in
   list_to_map map []
 
-(* AI Module *)
+(* NEW LIB functions for AI operation CHECK HERE*)
+let player1_frist_move = (0, 3)
+
+let player1_second_move pos =
+  match pos with
+  | 0, 0 -> (1, 3)
+  | 0, 1 -> (1, 1)
+  | 0, 2 -> (0, 5)
+  | 1, 3 -> (2, 3)
+  | 0, 4 -> (0, 1)
+  | 0, 5 -> (1, 5)
+  | 0, 6 -> (1, 3)
+  | _ -> invalid_arg "invaid input"
+
 let player2_frist_move pos =
   match pos with
   | 0, 0 -> (0, 3)
@@ -202,7 +216,27 @@ let player2_frist_move pos =
   | 0, 6 -> (0, 3)
   | _ -> invalid_arg "invaid input"
 
-let random_move _ = Random.int 7
+(* 1/7 1/7 1/7 1/7 1/7 1/7 1/7 *)
+let random_distribution _ = Random.int 7
+
+let distribution_maker (p0 : int) (p1 : int) (p2 : int) (p3 : int) (p4 : int)
+    (p5 : int) (p6 : int) : int =
+  if p6 + p5 + p4 + p3 + p1 + p2 + p0 = 100 then
+    let r = Random.int 100 in
+    if r <= p6 then 6
+    else if r <= p6 + p5 then 5
+    else if r <= p6 + p5 + p4 then 4
+    else if r <= p6 + p5 + p4 + p3 then 3
+    else if r <= p6 + p5 + p4 + p3 + p2 then 2
+    else if r <= p6 + p5 + p4 + p3 + p1 then 1
+    else 0
+  else invalid_arg "invalid distribution"
+
+let standard_distribution _ = distribution_maker 9 13 18 20 18 13 9
+
+let left_skewed_distribution _ = distribution_maker 17 20 17 15 13 10 8
+
+let right_skewed_distribution _ = distribution_maker 8 10 13 15 17 20 17
 
 let every_other_chunks (n : int) (odd_even : int) (l : 'a list) : 'a list list =
   chunks n l |> List.filteri ~f:(fun i _ -> i % 2 = odd_even)
@@ -222,7 +256,7 @@ let pair a n =
   | _ -> invalid_arg "wrong n"
 
 (* tested correct *)
-let is_valid_move move history =
+let is_valid_move (move : int * int) (history : (int * int) list) : bool =
   pair (List.unzip history) 1
   |> List.foldi ~init:true ~f:(fun i acc x ->
          if
@@ -231,10 +265,10 @@ let is_valid_move move history =
          then acc && false
          else acc && true)
 
-(* let check_length (l:'a list) : int =
-   match List.length l with
-   | 0 -> invalid_arg "empty move history"
-   | x -> if x < 6 then x else 5 *)
+(* for trainning purposes *)
+(* let move_given_dist (history : (int * int) list)  ~(dist) =
+   if dist _ *)
+
 
 (* 3 GRAMS: *)
 (* IF AI go second *)
@@ -334,6 +368,3 @@ let is_valid_move move history =
              [1;0;0;1;0;0;0]]
            ;;
 *)
-
-(* let z =[[1;1;1;1;0;0;0];
-           [1;0;1;0;0;0;0]]; *)
