@@ -3,14 +3,14 @@
   (modules board)
   (libraries 
     core)
-  (preprocess (pps ppx_jane)))
+  (preprocess (pps ppx_jane bisect_ppx)))
 
 (library
   (name lib)
   (modules lib)
   (libraries 
     core)
-  (preprocess (pps ppx_jane)))
+  (preprocess (pps ppx_jane bisect_ppx)))
 
 (executable
   (name main)
