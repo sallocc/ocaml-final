@@ -265,6 +265,24 @@ let is_valid_move (move : int * int) (history : (int * int) list) : bool =
          then acc && false
          else acc && true)
 
+(* execution *)
+module String_list = List_key (String)
+module Str_List_Map = Map.Make (String_list)
+
+let write_sexp_to_file filename text =
+  let output_file = Out_channel.create ~append:true filename in
+  Out_channel.output_string output_file (Str_List_Map.sexp_of_t Int.sexp_of_t text |> Sexp.to_string);
+  Out_channel.close output_file
+
+let sexp_to_map filename = 
+  Str_List_Map.t_of_sexp Int.t_of_sexp (Sexp.load_sexp filename);;
+  
+(* change to correct directory *)
+let correct_directory _ = Sys.chdir("/Users/zhenboyan/Desktop")
+let correct_directory _ = Sys.chdir("/Users/zhenboyan/Desktop/ocaml-final")
+
+
+
 (* for trainning purposes *)
 (* let move_given_dist (history : (int * int) list)  ~(dist) =
    if dist _ *)
