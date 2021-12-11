@@ -4,6 +4,7 @@
     src/board.ml
     src/lib.ml
     src/dune
+    src/main.ml
     tests/tests.ml
     tests/dune
   )
