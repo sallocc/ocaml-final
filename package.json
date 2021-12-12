@@ -1,0 +1,24 @@
+{
+  "name": "ocaml-final",
+  "version": "1.0.0",
+  "description": "The repository for our Functional Programming and Software Engineering course",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sallocc/ocaml-final.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sallocc/ocaml-final/issues"
+  },
+  "homepage": "https://github.com/sallocc/ocaml-final#readme"
+}

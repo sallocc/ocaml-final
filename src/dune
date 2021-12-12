@@ -2,8 +2,9 @@
   (name main)
   (modules main)
   (libraries 
-    core)
-  (preprocess (pps ppx_jane)))
+    core
+    dream))
+
 
 (executable
   (name connectFour)
