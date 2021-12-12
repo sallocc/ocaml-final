@@ -45,7 +45,7 @@ module N_grams (Token : Map.Key) = struct
   Map.Make (struct
     type t = Token.t list [@@deriving compare, sexp]
   end)
-  type distribution = Token.t Bag.t Token_list_map.t
+  type distribution = Token.t Bag.t Token_list_map.t [@@deriving sexp]
   module Token_list = List_key (Token)
 
   let make_kv (n : int) (player:int) (l : Token.t list) : (Token.t * Token.t list) list =
@@ -179,7 +179,7 @@ let rec get_n_items (n:int) (original:(int*int) list) (return_list:(int*int) lis
   | _ -> get_n_items (n-1) (original) (List.nth_exn original (n-1) :: return_list)
 
 (* n here is n-1 in n_grams *)
-let rec get_last_n_moves (n:int) (history : (int * int) list) : (int * int) list =
+let get_last_n_moves (n:int) (history : (int * int) list) : (int * int) list =
   if n < 3 then invalid_arg "n is designed to be greater than 3"
   else if n > 6 then invalid_arg "n is designed to be less than 7"
   else if (List.length history) < 3 then [] 

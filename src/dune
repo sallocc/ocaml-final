@@ -3,15 +3,15 @@
   (modules board)
   (libraries 
     core)
-  (preprocess (pps ppx_jane bisect_ppx)))
-
+  (preprocess (pps ppx_jane)))
+; bisect_ppx
 (library
   (name lib)
   (modules lib)
   (libraries 
     core)
-  (preprocess (pps ppx_jane bisect_ppx)))
-
+  (preprocess (pps ppx_jane)))
+; bisect_ppx
 (executable
   (name main)
   (modules main)
@@ -27,8 +27,8 @@
     board
     lib
     core)
-  (preprocess (pps ppx_jane bisect_ppx)))
-
+  (preprocess (pps ppx_jane )))
+; bisect_ppx
     ; dream))
     
 ; (rule
