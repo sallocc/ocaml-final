@@ -19,6 +19,16 @@
     board
     lib
     core))
+
+(executable
+  (name training)
+  (modules training)
+  (libraries
+    board
+    lib
+    core)
+  (preprocess (pps ppx_jane bisect_ppx)))
+
     ; dream))
     
 ; (rule

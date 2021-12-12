@@ -1,6 +1,5 @@
 open Core
 
-(* OLD LIB functions, IGNORE PLEASE same as in A4 *)
 let chunks (n : int) (l : 'a list) : 'a list list =
   if n <= 0 then invalid_arg "invalid input n"
   else
@@ -15,6 +14,17 @@ let chunks (n : int) (l : 'a list) : 'a list list =
       l
     |> List.filter ~f:(fun x -> not @@ List.is_empty x)
 
+let every_other_chunks (n : int) (odd_even : int) (l : 'a list) : 'a list list =
+  chunks n l |> List.filteri ~f:(fun i _ -> i % 2 = odd_even)
+
+let wining_sequence (n : int) (winner : int) (l : 'a list) : 'a list list =
+  match (winner, n % 2) with
+  | 1, 1 -> every_other_chunks n 0 l
+  | 1, 0 -> every_other_chunks n 1 l
+  | 2, 1 -> every_other_chunks n 1 l
+  | 2, 0 -> every_other_chunks n 0 l
+  | _ -> invalid_arg "winner has wrong value"
+
 let split_last (l : 'a list) : 'a * 'a list =
   if List.is_empty l then invalid_arg "empty list"
   else (List.rev l |> List.hd_exn, List.rev l |> List.tl_exn |> List.rev)
@@ -23,37 +33,26 @@ module List_key (Elt : Map.Key) : Map.Key with type t = Elt.t list = struct
   type t = Elt.t list [@@deriving compare, sexp]
 end
 
-module type Randomness = sig
-  val int : int -> int
-end
-
-module Randomness = struct
-  let int n = Base.Random.int n
-  (* let int _ = 0 *)
-end
-
-let sample (module R : Randomness) (b : 'a Bag.t) : 'a option =
+let sample (b : 'a Bag.t) : 'a option =
   let bag_to_list (b : 'a Bag.t) (l : 'a list) : 'a list =
     Bag.fold b ~init:l ~f:(fun acc a -> a :: acc)
   in
   if Bag.length b = 0 then None
-  else List.nth (bag_to_list b []) (R.int @@ Bag.length b)
+  else List.nth (bag_to_list b []) (Random.int @@ Bag.length b)
 
-module N_grams (Random : Randomness) (Token : Map.Key) = struct
+module N_grams (Token : Map.Key) = struct
   module Token_list_map : Map.S with type Key.t = Token.t list =
   Map.Make (struct
     type t = Token.t list [@@deriving compare, sexp]
   end)
-
   type distribution = Token.t Bag.t Token_list_map.t
-
   module Token_list = List_key (Token)
 
-  let make_kv (n : int) (l : Token.t list) : (Token.t * Token.t list) list =
-    chunks n l |> List.map ~f:(fun x -> split_last x)
+  let make_kv (n : int) (player:int) (l : Token.t list) : (Token.t * Token.t list) list =
+    wining_sequence n player l |> List.map ~f:(fun x -> split_last x)
 
-  let make_keys (n : int) (l : Token.t list) : Token.t list list =
-    make_kv n l |> List.map ~f:(fun (_, k) -> k)
+  let make_keys (n : int) (player:int) (l : Token.t list) : Token.t list list =
+    make_kv n player l |> List.map ~f:(fun (_, k) -> k)
 
   let map_add (map : Token.t Bag.t Token_list_map.t)
       (key : Token_list_map.Key.t) (data : Token.t Bag.t) :
@@ -80,97 +79,14 @@ module N_grams (Random : Randomness) (Token : Map.Key) = struct
         map_add acc k bag)
       ~init:map
 
-  let ngrams (n : int) (l : Token.t list) : distribution =
-    make_distribution (make_keys n l) (make_kv n l) Token_list_map.empty
-
+  let ngrams (n : int) (player:int) (l : Token.t list) : distribution =
+    make_distribution (make_keys n player l) (make_kv n player l) Token_list_map.empty
   let desome (x : Token.t option) : Token.t =
     match x with Some x -> x | _ -> invalid_arg "none case"
-
-  let initialize_list (initial_ngram : Token.t list) (max_length : int) :
-      Token.t list =
-    if List.length initial_ngram > max_length then
-      List.fold initial_ngram ~init:[] ~f:(fun acc x ->
-          if List.length acc < max_length then x :: acc else acc)
-    else List.rev initial_ngram
-
-  let first_nth (n : int) (l : Token.t list) : Token.t list =
-    let rec make_list (i : int) (sub_list : 'a list) (new_list : Token.t list) :
-        Token.t list =
-      if i > 0 then
-        make_list (i - 1) (List.tl_exn sub_list)
-          (List.hd_exn sub_list :: new_list)
-      else new_list
-    in
-    make_list n l []
-
-  let sample_sequence (dist : distribution) ~(max_length : int)
-      ~(initial_ngram : Token.t list) : Token.t list =
-    let rec loop (output_list : Token.t list) (i : int) : Token.t list =
-      if i > 0 && max_length > 0 then
-        loop
-          (Map.fold dist ~init:output_list ~f:(fun ~key:k ~data:v acc ->
-               if
-                 Token_list.compare
-                   (first_nth
-                      (match List.length initial_ngram with
-                      | 0 -> List.length acc
-                      | x -> x)
-                      acc)
-                   k
-                 = 0
-                 && List.length acc < max_length
-               then desome (sample (module Random) v) :: acc
-               else acc))
-          (i - 1)
-      else List.rev output_list
-    in
-    loop
-      (initialize_list initial_ngram max_length)
-      (max_length - List.length initial_ngram)
 end
 
-let sanitize (s : string) : string option =
-  if
-    String.lowercase s
-    |> String.filter ~f:(fun x ->
-           (Char.( <= ) x 'z' && Char.( >= ) x 'a')
-           || (Char.( <= ) x '9' && Char.( >= ) x '0'))
-    |> String.is_empty
-  then None
-  else
-    Some
-      (String.lowercase s
-      |> String.filter ~f:(fun x ->
-             (Char.( <= ) x 'z' && Char.( >= ) x 'a')
-             || (Char.( <= ) x '9' && Char.( >= ) x '0')))
-
-let split_space_sanitize (l : string list) : string list =
-  List.map l ~f:(fun x ->
-      String.split_on_chars ~on:[ ' '; '\t'; '\n' ] x
-      |> List.filter ~f:(fun x -> not @@ String.( = ) x ""))
-  |> List.concat
-  |> List.fold ~init:[] ~f:(fun acc x ->
-         match sanitize x with Some a -> a :: acc | None -> acc)
-  |> List.rev
-
-let list_to_space_string (l : string list) : string =
-  List.fold l ~init:"" ~f:(fun acc x ->
-      String.( ^ ) acc (if String.is_empty acc then x else String.( ^ ) " " x))
-
-let given_word (l : string list) : string list =
-  l |> List.tl_exn |> List.tl_exn |> List.tl_exn |> List.tl_exn
-  |> split_space_sanitize
-
-let rec random_word (i : int) (r : int) (l : string list) (n : int)
-    (file_word_list : string list) : string list =
-  if i < n - 1 then
-    random_word (i + 1) r
-      (List.nth_exn file_word_list (r + i) :: l)
-      n file_word_list
-  else List.rev l |> split_space_sanitize
-
 let rand_num (file_word_list : 'a list) (n : int) : int =
-  Randomness.int (List.length file_word_list - n + 1)
+  Random.int (List.length file_word_list - n + 1)
 
 let list_to_map (l : 'a list) (map : ('a, int, 'b) Map_intf.Map.t) :
     ('a, int, 'b) Map_intf.Map.t =
@@ -241,14 +157,6 @@ let right_skewed_distribution _ = distribution_maker 8 10 13 15 17 20 17
 let every_other_chunks (n : int) (odd_even : int) (l : 'a list) : 'a list list =
   chunks n l |> List.filteri ~f:(fun i _ -> i % 2 = odd_even)
 
-let wining_sequence (l : 'a list) (winner : int) (n : int) : 'a list list =
-  match (winner, n % 2) with
-  | 1, 1 -> every_other_chunks n 0 l
-  | 1, 0 -> every_other_chunks n 1 l
-  | 2, 1 -> every_other_chunks n 1 l
-  | 2, 0 -> every_other_chunks n 0 l
-  | _ -> invalid_arg "winner has wrong value"
-
 let pair a n =
   match (a, n) with
   | (x, _), 1 -> x
@@ -265,28 +173,24 @@ let is_valid_move (move : int * int) (history : (int * int) list) : bool =
          then acc && false
          else acc && true)
 
+let rec get_n_items (n:int) (original:(int*int) list) (return_list:(int*int) list) : (int*int)list = 
+  match n with 
+  | 0 -> return_list
+  | _ -> get_n_items (n-1) (original) (List.nth_exn original (n-1) :: return_list)
+
+(* n here is n-1 in n_grams *)
+let rec get_last_n_moves (n:int) (history : (int * int) list) : (int * int) list =
+  if n < 3 then invalid_arg "n is designed to be greater than 3"
+  else if n > 6 then invalid_arg "n is designed to be less than 7"
+  else if (List.length history) < 3 then [] 
+  else if (List.length history) < n then history
+  else get_n_items n history []
+
 (* execution *)
-module String_list = List_key (String)
-module Str_List_Map = Map.Make (String_list)
-
-let write_sexp_to_file filename text =
-  let output_file = Out_channel.create ~append:true filename in
-  Out_channel.output_string output_file (Str_List_Map.sexp_of_t Int.sexp_of_t text |> Sexp.to_string);
-  Out_channel.close output_file
-
-let sexp_to_map filename = 
-  Str_List_Map.t_of_sexp Int.t_of_sexp (Sexp.load_sexp filename);;
-  
-(* change to correct directory *)
-let correct_directory _ = Sys.chdir("/Users/zhenboyan/Desktop")
-let correct_directory _ = Sys.chdir("/Users/zhenboyan/Desktop/ocaml-final")
-
-
 
 (* for trainning purposes *)
 (* let move_given_dist (history : (int * int) list)  ~(dist) =
    if dist _ *)
-
 
 (* 3 GRAMS: *)
 (* IF AI go second *)
