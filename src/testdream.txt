@@ -1,3 +1,84 @@
+let rec displayTable gameboard =
+%   begin match gameboard with
+%   | hd :: tl -> displayRow hd; displayTable tl;
+%   | [] -> 
+        </br>
+% end;
+
+let rec displayRow row colNum request =
+%   let redImage = "https://toppng.com/uploads/preview/red-circle-1155276042606ekqvli9k.png" in
+%   let yellowImage = "https://www.pngfind.com/pngs/m/147-1479400_png-point-yellow-circle-transparent-background-png-download.png" in
+%   let grayImage = "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Location_dot_grey.svg/1200px-Location_dot_grey.svg.png" in
+%   begin if colNum = 0 then
+        <html>
+        <body>
+          <%s! Dream.form_tag ~action:"/" request %>
+%   end;
+%   begin match row with
+%   | [] -> 
+            </br>
+%   | "0" :: tl -> 
+            <button name="<%i colNum%>" type=submit style="width:75px; height:75px;">
+              <img src=<%s grayImage%>
+              style="width:50px; height:50px; margin:0px;">
+            </button>
+%           displayRow tl (colNum + 1) request
+%   | "1" :: tl -> 
+            <button name="<%i colNum%>" type=submit style="width:75px; height:75px;">
+              <img src=<%s redImage%>
+              style="width:50px; height:50px; margin:0px;">
+            </button>
+%           displayRow tl (colNum + 1) request
+%   | "2" :: tl -> 
+            <button name="<%i colNum%>" type=submit style="width:75px; height:75px;">
+              <img src=<%s yellowImage%>
+              style="width:50px; height:50px; margin:0px;">
+            </button>
+%           displayRow tl (colNum + 1) request
+%   | _ :: tl -> 
+            </br>
+%   end;
+%   begin if colNum = 6 then
+        </form>
+      </body>
+      </html>
+%   end;
+
+let () =
+  Dream.run 
+  @@ Dream.logger
+  @@ Dream.memory_sessions
+  @@ Dream.router [
+
+    Dream.get  "/"
+      (fun request ->
+        Dream.html (displayRow [0; 1; 2; 0; 0; 1; 2] 0 request));
+
+    Dream.post "/"
+      (fun request ->
+        match%lwt Dream.form request with
+        | `Ok ["0", _] ->
+          Dream.html (displayRow [0; 1; 2; 0; 0; 1; 2] 0 request)
+        | `Ok ["1", _] ->
+          Dream.html (displayRow [1; 1; 2; 0; 0; 1; 2] 0 request)
+        | `Ok ["2", _] -> 
+          Dream.html (displayRow [2; 1; 2; 0; 0; 1; 2] 0 request)
+        | `Ok ["3", _] ->
+          Dream.html (displayRow [0; 1; 2; 1; 0; 1; 2] 0 request)
+        | `Ok ["4", _] ->
+          Dream.html (displayRow [0; 1; 2; 2; 0; 1; 2] 0 request)
+        | `Ok ["5", _] ->
+          Dream.html (displayRow [0; 1; 2; 0; 1; 1; 2] 0 request)
+        | `Ok ["6", _] ->
+          Dream.html (displayRow [0; 1; 2; 0; 2; 1; 2] 0 request)
+        | _ ->
+          Dream.empty `Bad_Request);
+
+  ]
+  @@ Dream.not_found
+
+
+
 (*let show_color ?color request =
   <html>
   <body>

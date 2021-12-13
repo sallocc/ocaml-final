@@ -22,7 +22,7 @@
     core
     board
     dream)
-  (preprocess (pps lwt_ppx)))
+  (preprocess (pps lwt_ppx ppx_jane)))
 
 (rule
  (targets main.ml)

@@ -42,7 +42,7 @@ let changeRow (xPos : int) (newVal : int) (row : int list) : int list =
 
 let rec changePos (currX : int) (currY : int) (xPos : int) (yPos : int)
     (newVal : int) (board : gameboard) : gameboard =
-  if xPos < 0 || xPos > 5 || yPos < 0 || yPos > 6 then
+  if xPos < 0 || xPos > 6 || yPos < 0 || yPos > 5 then
     failwith "Invalid position"
   else
     match board with
