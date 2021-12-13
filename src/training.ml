@@ -37,9 +37,9 @@ let store = "dist.txt"
 
 let original_dist = sexp_to_map store
 
-let gram = 6
+let gram = 4
 
-let num_games = 10000
+let num_games = 1000000
 
 let random_d = random_distribution
 

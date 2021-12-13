@@ -197,12 +197,23 @@ let merge_distribution new_d og_d =
               Bag.transfer ~src:v ~dst:x;
               x))
 
-let rand_8 _ = Random.int 8
+let around_last_move history =
+  match List.nth_exn history (List.length history - 1) with
+  | _, 6 -> distribution_maker 5 6 8 10 17 24 30
+  | _, 5 -> distribution_maker 5 6 8 10 22 27 22
+  | _, 4 -> distribution_maker 3 6 10 22 27 22 10
+  | _, 3 -> standard_distribution 0
+  | _, 2 -> distribution_maker 10 22 27 22 10 6 3
+  | _, 1 -> distribution_maker 22 27 22 10 8 6 5
+  | _, 0 -> distribution_maker 30 24 17 10 8 6 5
+  | _, _ -> invalid_arg "invalid history"
 
 let ai_dist_move dist history =
   if List.length history >= 42 then invalid_arg "invalid history"
   else
-    let m = dist 0 in
+    let m =
+      if List.length history = 0 then dist 0 else around_last_move history
+    in
     let rec until_valid level move =
       if level < 6 then
         if ai_is_valid_move (level, move) history then (level, move)
@@ -211,20 +222,8 @@ let ai_dist_move dist history =
     in
     until_valid 0 m
 
-let rec look_around dist history =
-  let move =
-    match List.nth history (List.length history - 1) with
-    | None -> (0, 3)
-    | Some (x, y) -> (
-        match rand_8 x with
-        | 0 | 2 -> (x, y + 1)
-        | 1 | 3 -> (x, y - 1)
-        | 6 | 7 -> (x + 1, y)
-        | 4 -> (x, y + 2)
-        | 5 -> (x, y - 2)
-        | _ -> ai_dist_move dist history)
-  in
-  if ai_is_valid_move move history then move else look_around dist history
+(* in
+   if ai_is_valid_move move history then move else look_around dist history *)
 
 let desome x = match x with Some x -> x | _ -> invalid_arg "none case"
 
@@ -242,8 +241,8 @@ let ai_move history last_n dist_map dist num_repeat =
               if ai_is_valid_move (desome (sample x)) history then
                 desome (sample x)
               else re_move (i + 1)
-          | None -> look_around dist history
-        else look_around dist history
+          | None -> ai_dist_move dist history
+        else ai_dist_move dist history
       in
       re_move 0
 
