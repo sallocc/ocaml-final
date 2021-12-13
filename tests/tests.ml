@@ -321,11 +321,15 @@ let test_ai_move _ =
   assert_equal (0, 4)
   @@ ai_move [ (0, 1); (0, 2); (0, 3) ] 3 bcd standard_distribution 10
 
+let test_look_around _ =
+  assert_equal (5, 6) @@ look_around standard_distribution almost_full_h
+
 let new_lib_test =
   "new lib test"
   >: test_list
        [
          (* "Merge Distribution" >:: test_merge_distribution; *)
+         "Look Around" >:: test_look_around;
          "AI Move" >:: test_ai_move;
          "AI Dist Move" >:: test_ai_dist_move;
          "History to Board" >:: test_history_to_board;

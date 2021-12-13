@@ -124,7 +124,7 @@ let random_distribution _ = Random.int 7
 let distribution_maker (p0 : int) (p1 : int) (p2 : int) (p3 : int) (p4 : int)
     (p5 : int) (p6 : int) : int =
   if p6 + p5 + p4 + p3 + p1 + p2 + p0 = 100 then
-    let r = Random.int 100 +1 in
+    let r = Random.int 100 + 1 in
     if r <= p6 then 6
     else if r <= p6 + p5 then 5
     else if r <= p6 + p5 + p4 then 4
@@ -151,13 +151,17 @@ let pair a n =
 
 (* tested correct *)
 let ai_is_valid_move (move : int * int) (history : (int * int) list) : bool =
-  pair (List.unzip history) 1
-  |> List.foldi ~init:true ~f:(fun i acc x ->
-         if
-           x = pair move 1
-           && List.nth_exn (pair (List.unzip history) 2) i = pair move 2
-         then acc && false
-         else acc && true)
+  match move with
+  | x, y ->
+      if x < 0 || x > 5 || y < 0 || y > 6 then false
+      else
+        pair (List.unzip history) 1
+        |> List.foldi ~init:true ~f:(fun i acc x ->
+               if
+                 x = pair move 1
+                 && List.nth_exn (pair (List.unzip history) 2) i = pair move 2
+               then acc && false
+               else acc && true)
 
 let rec get_n_items (n : int) (original : (int * int) list)
     (return_list : (int * int) list) : (int * int) list =
@@ -179,11 +183,11 @@ let get_last_n_moves (n : int) (history : (int * int) list) : (int * int) list =
 
 (* Array.make_matrix ~dimx:6 ~dimy:7 0;; *)
 (* let history_to_board history board =
-  List.foldi history ~init:board ~f:(fun i acc (j, k) ->
-      List.mapi acc ~f:(fun i1 x ->
-          if i1 = j then
-            List.mapi x ~f:(fun i2 y -> if i2 = k then (i % 2) + 1 else y)
-          else x)) *)
+   List.foldi history ~init:board ~f:(fun i acc (j, k) ->
+       List.mapi acc ~f:(fun i1 x ->
+           if i1 = j then
+             List.mapi x ~f:(fun i2 y -> if i2 = k then (i % 2) + 1 else y)
+           else x)) *)
 let merge_distribution new_d og_d =
   Map.fold new_d ~init:og_d ~f:(fun ~key:k ~data:v acc ->
       Map.update acc k ~f:(fun data ->
@@ -192,6 +196,8 @@ let merge_distribution new_d og_d =
           | Some x ->
               Bag.transfer ~src:v ~dst:x;
               x))
+
+let rand_8 _ = Random.int 8
 
 let ai_dist_move dist history =
   if List.length history >= 42 then invalid_arg "invalid history"
@@ -205,14 +211,29 @@ let ai_dist_move dist history =
     in
     until_valid 0 m
 
+let rec look_around dist history =
+  let move =
+    match List.nth history (List.length history - 1) with
+    | None -> (0, 3)
+    | Some (x, y) -> (
+        match rand_8 x with
+        | 0 | 2 -> (x, y + 1)
+        | 1 | 3 -> (x, y - 1)
+        | 6 | 7 -> (x + 1, y)
+        | 4 -> (x, y + 2)
+        | 5 -> (x, y - 2)
+        | _ -> ai_dist_move dist history)
+  in
+  if ai_is_valid_move move history then move else look_around dist history
+
 let desome x = match x with Some x -> x | _ -> invalid_arg "none case"
 
 let ai_move history last_n dist_map dist num_repeat =
   (* pre programed moves *)
   match List.length history with
   | 0 -> player1_first_move
-  | 1 -> player2_first_move (List.hd_exn history) 
-  | 2 -> player1_second_move (List.tl_exn history |> List.hd_exn )
+  | 1 -> player2_first_move (List.hd_exn history)
+  | 2 -> player1_second_move (List.tl_exn history |> List.hd_exn)
   | _ ->
       let rec re_move i =
         if i < num_repeat then
@@ -221,8 +242,8 @@ let ai_move history last_n dist_map dist num_repeat =
               if ai_is_valid_move (desome (sample x)) history then
                 desome (sample x)
               else re_move (i + 1)
-          | None -> ai_dist_move dist history
-        else ai_dist_move dist history
+          | None -> look_around dist history
+        else look_around dist history
       in
       re_move 0
 
