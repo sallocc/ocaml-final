@@ -45,13 +45,17 @@ module N_grams (Token : Map.Key) = struct
   Map.Make (struct
     type t = Token.t list [@@deriving compare, sexp]
   end)
+
   type distribution = Token.t Bag.t Token_list_map.t [@@deriving sexp]
+
   module Token_list = List_key (Token)
 
-  let make_kv (n : int) (player:int) (l : Token.t list) : (Token.t * Token.t list) list =
+  let make_kv (n : int) (player : int) (l : Token.t list) :
+      (Token.t * Token.t list) list =
     wining_sequence n player l |> List.map ~f:(fun x -> split_last x)
 
-  let make_keys (n : int) (player:int) (l : Token.t list) : Token.t list list =
+  let make_keys (n : int) (player : int) (l : Token.t list) : Token.t list list
+      =
     make_kv n player l |> List.map ~f:(fun (_, k) -> k)
 
   let map_add (map : Token.t Bag.t Token_list_map.t)
@@ -79,36 +83,18 @@ module N_grams (Token : Map.Key) = struct
         map_add acc k bag)
       ~init:map
 
-  let ngrams (n : int) (player:int) (l : Token.t list) : distribution =
-    make_distribution (make_keys n player l) (make_kv n player l) Token_list_map.empty
-  let desome (x : Token.t option) : Token.t =
-    match x with Some x -> x | _ -> invalid_arg "none case"
+  let ngrams (n : int) (player : int) (l : Token.t list) : distribution =
+    make_distribution (make_keys n player l) (make_kv n player l)
+      Token_list_map.empty
 end
-
-let rand_num (file_word_list : 'a list) (n : int) : int =
-  Random.int (List.length file_word_list - n + 1)
 
 let list_to_map (l : 'a list) (map : ('a, int, 'b) Map_intf.Map.t) :
     ('a, int, 'b) Map_intf.Map.t =
   List.fold l ~init:map ~f:(fun acc x ->
       Map.update acc x ~f:(fun v -> match v with Some a -> a + 1 | None -> 1))
 
-let most_frequent_grams (map : ('a, int, 'b) Map_intf.Map.t) (n : int)
-    ~(compare : 'a -> 'a -> int) : ('a * int) list =
-  let rec list_to_map m kv =
-    if List.length kv < n then
-      let make_kv =
-        Map.fold m ~init:([], 0) ~f:(fun ~key:x ~data:y (a, b) ->
-            if y > b || (y = b && compare a x = 1) then (x, y) else (a, b))
-      in
-      let remove_m = match make_kv with x, _ -> Map.remove m x in
-      list_to_map remove_m (make_kv :: kv)
-    else kv
-  in
-  list_to_map map []
-
 (* NEW LIB functions for AI operation CHECK HERE*)
-let player1_frist_move = (0, 3)
+let player1_first_move = (0, 3)
 
 let player1_second_move pos =
   match pos with
@@ -121,12 +107,12 @@ let player1_second_move pos =
   | 0, 6 -> (1, 3)
   | _ -> invalid_arg "invaid input"
 
-let player2_frist_move pos =
+let player2_first_move pos =
   match pos with
   | 0, 0 -> (0, 3)
   | 0, 1 -> (0, 2)
   | 0, 2 -> (0, 3)
-  | 0, 3 -> (0, 3)
+  | 0, 3 -> (1, 3)
   | 0, 4 -> (0, 3)
   | 0, 5 -> (0, 4)
   | 0, 6 -> (0, 3)
@@ -138,17 +124,17 @@ let random_distribution _ = Random.int 7
 let distribution_maker (p0 : int) (p1 : int) (p2 : int) (p3 : int) (p4 : int)
     (p5 : int) (p6 : int) : int =
   if p6 + p5 + p4 + p3 + p1 + p2 + p0 = 100 then
-    let r = Random.int 100 in
+    let r = Random.int 100 + 1 in
     if r <= p6 then 6
     else if r <= p6 + p5 then 5
     else if r <= p6 + p5 + p4 then 4
     else if r <= p6 + p5 + p4 + p3 then 3
     else if r <= p6 + p5 + p4 + p3 + p2 then 2
-    else if r <= p6 + p5 + p4 + p3 + p1 then 1
+    else if r <= p6 + p5 + p4 + p3 + p2 + p1 then 1
     else 0
   else invalid_arg "invalid distribution"
 
-let standard_distribution _ = distribution_maker 9 13 18 20 18 13 9
+let standard_distribution _ = distribution_maker 2 14 20 27 20 15 2
 
 let left_skewed_distribution _ = distribution_maker 17 20 17 15 13 10 8
 
@@ -164,27 +150,102 @@ let pair a n =
   | _ -> invalid_arg "wrong n"
 
 (* tested correct *)
-let is_valid_move (move : int * int) (history : (int * int) list) : bool =
-  pair (List.unzip history) 1
-  |> List.foldi ~init:true ~f:(fun i acc x ->
-         if
-           x = pair move 1
-           && List.nth_exn (pair (List.unzip history) 2) i = pair move 2
-         then acc && false
-         else acc && true)
+let ai_is_valid_move (move : int * int) (history : (int * int) list) : bool =
+  match move with
+  | x, y ->
+      if x < 0 || x > 5 || y < 0 || y > 6 then false
+      else
+        pair (List.unzip history) 1
+        |> List.foldi ~init:true ~f:(fun i acc x ->
+               if
+                 x = pair move 1
+                 && List.nth_exn (pair (List.unzip history) 2) i = pair move 2
+               then acc && false
+               else acc && true)
 
-let rec get_n_items (n:int) (original:(int*int) list) (return_list:(int*int) list) : (int*int)list = 
-  match n with 
+let rec get_n_items (n : int) (original : (int * int) list)
+    (return_list : (int * int) list) : (int * int) list =
+  match n with
   | 0 -> return_list
-  | _ -> get_n_items (n-1) (original) (List.nth_exn original (n-1) :: return_list)
+  | _ ->
+      get_n_items (n - 1) original (List.nth_exn original (n - 1) :: return_list)
 
 (* n here is n-1 in n_grams *)
-let get_last_n_moves (n:int) (history : (int * int) list) : (int * int) list =
+let get_last_n_moves (n : int) (history : (int * int) list) : (int * int) list =
   if n < 3 then invalid_arg "n is designed to be greater than 3"
   else if n > 6 then invalid_arg "n is designed to be less than 7"
-  else if (List.length history) < 3 then [] 
-  else if (List.length history) < n then history
+  else if List.length history < 3 then []
+  else if List.length history < n then history
   else get_n_items n history []
+
+(* let bag_to_list (b : 'a Bag.t) =
+   Bag.fold b ~init:[] ~f:(fun acc a -> a :: acc) *)
+
+(* Array.make_matrix ~dimx:6 ~dimy:7 0;; *)
+(* let history_to_board history board =
+   List.foldi history ~init:board ~f:(fun i acc (j, k) ->
+       List.mapi acc ~f:(fun i1 x ->
+           if i1 = j then
+             List.mapi x ~f:(fun i2 y -> if i2 = k then (i % 2) + 1 else y)
+           else x)) *)
+let merge_distribution new_d og_d =
+  Map.fold new_d ~init:og_d ~f:(fun ~key:k ~data:v acc ->
+      Map.update acc k ~f:(fun data ->
+          match data with
+          | None -> v
+          | Some x ->
+              Bag.transfer ~src:v ~dst:x;
+              x))
+
+let rand_8 _ = Random.int 8
+
+let ai_dist_move dist history =
+  if List.length history >= 42 then invalid_arg "invalid history"
+  else
+    let m = dist 0 in
+    let rec until_valid level move =
+      if level < 6 then
+        if ai_is_valid_move (level, move) history then (level, move)
+        else until_valid (level + 1) move
+      else until_valid 0 (dist 1)
+    in
+    until_valid 0 m
+
+let rec look_around dist history =
+  let move =
+    match List.nth history (List.length history - 1) with
+    | None -> (0, 3)
+    | Some (x, y) -> (
+        match rand_8 x with
+        | 0 | 2 -> (x, y + 1)
+        | 1 | 3 -> (x, y - 1)
+        | 6 | 7 -> (x + 1, y)
+        | 4 -> (x, y + 2)
+        | 5 -> (x, y - 2)
+        | _ -> ai_dist_move dist history)
+  in
+  if ai_is_valid_move move history then move else look_around dist history
+
+let desome x = match x with Some x -> x | _ -> invalid_arg "none case"
+
+let ai_move history last_n dist_map dist num_repeat =
+  (* pre programed moves *)
+  match List.length history with
+  | 0 -> player1_first_move
+  | 1 -> player2_first_move (List.hd_exn history)
+  | 2 -> player1_second_move (List.tl_exn history |> List.hd_exn)
+  | _ ->
+      let rec re_move i =
+        if i < num_repeat then
+          match Map.find dist_map (get_last_n_moves last_n history) with
+          | Some x ->
+              if ai_is_valid_move (desome (sample x)) history then
+                desome (sample x)
+              else re_move (i + 1)
+          | None -> look_around dist history
+        else look_around dist history
+      in
+      re_move 0
 
 (* execution *)
 
@@ -222,71 +283,4 @@ let get_last_n_moves (n:int) (history : (int * int) list) : (int * int) list =
     2   0 0 0 0 0 0 0
     1   0 0 0 0 0 0 0
     0   0 0 0 0 0 0 0
-*)
-(*
-     let a =[[0;0;0;0;0;0;0];
-             [0;0;0;0;0;0;0];
-             [0;0;0;0;0;0;0];
-             [0;0;0;0;0;0;0];
-             [0;0;0;0;0;0;0];
-             [0;0;0;0;0;0;0]]
-           ;;
-*)
-(*
-     let aa =[[0;0;0;0;0;0;0];
-             [0;1;0;0;0;0;0];
-             [0;0;1;0;0;0;0];
-             [0;0;0;1;0;0;0];
-             [0;0;0;0;1;0;0];
-             [0;0;0;0;0;0;0]]
-           ;;
-*)
-(*
-     let b =[[0;0;0;1;0;0;0];
-             [0;1;0;0;0;0;0];
-             [1;0;0;1;0;0;0];
-             [0;0;1;0;0;0;0];
-             [0;1;0;0;0;0;0];
-             [1;0;0;0;0;0;0]]
-           ;;
-*)
-
-(*
-     let c =[[1;1;1;1;0;0;0];
-             [0;1;0;0;0;0;0];
-             [1;0;0;1;0;0;0];
-             [0;0;1;0;0;0;0];
-             [0;1;0;0;0;0;0];
-             [1;0;0;0;0;0;0]]
-           ;;
-*)
-
-(*
-     let d =[[1;0;0;0;0;0;0];
-             [0;1;0;1;0;0;0];
-             [0;0;0;1;0;0;0];
-             [0;0;1;1;0;0;0];
-             [0;1;0;1;1;1;1];
-             [1;1;1;0;1;1;1]]
-           ;;
-*)
-
-(*
-     let e =[[1;1;1;1;1;0;0];
-             [1;0;0;0;0;0;1];
-             [1;0;0;1;0;0;0];
-             [1;1;0;0;0;1;0];
-             [1;1;0;0;1;0;0];
-             [1;0;0;1;0;0;0]]
-           ;;
-*)
-
-(*
-     let g =[[1;1;1;1;1;0;0];
-             [1;0;1;0;0;0;1];
-             [1;0;0;1;0;0;0];
-             [1;1;0;0;1;1;0];
-             [1;1;0;0;1;1;0];
-             [1;0;0;1;0;0;0]]
-           ;;
 *)
