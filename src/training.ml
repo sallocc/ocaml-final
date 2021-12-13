@@ -41,20 +41,16 @@ let winer history board =
 let record_distribution n player history = 
   Pos_grams.ngrams n player history
 
+let ai_random_move dist history = 
+  (* a random move from distribution *)
+  let rec until_valid level = 
+    if is_valid_move (level,dist 0) history then (level,dist 0) 
+    else until_valid (level+1)
+
+
+let () =
+  standard_distribution
+  failwith "bad"
 (* let () = correct_directory 1 ; write_sexp_to_file "abc.txt" abc *)
 (* let dis = sexp_to_map "abc.txt" *)
 
-(* Map.merge new_d og_d ~f:(fun ~key:k ->
-
-   ) *)
-
-(* match d1,d2 with
-   | Some x, Some y -> Bag.transfer x y
-   | None, Some y -> y
-   | Some x, None -> x *)
-
-(* let abc = Pos_grams.ngrams 2 1 [ 1; 2; 3; 4; 5; 6; 7; 8; 9 ] *)
-
-(* change to correct directory *)
-(* let correct_directory _ = Sys.chdir("/Users/zhenboyan/Desktop") *)
-(* let correct_directory _ = Sys.chdir("/Users/zhenboyan/Desktop/ocaml-final") *)
