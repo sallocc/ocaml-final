@@ -1,14 +1,51 @@
+
+
 (library
+  (name board)
+  (modules board)
+  (libraries 
+    core)
+  (preprocess (pps ppx_jane)))
+; bisect_ppx
+(library
+  (name lib)
+  (modules lib)
+  (libraries 
+    core)
+  (preprocess (pps ppx_jane)))
+; bisect_ppx
+
+(executable
   (name main)
   (modules main)
-  (libraries 
+  (libraries
     core
-    dream))
+    board
+    dream)
+  (preprocess (pps lwt_ppx)))
+
+(rule
+ (targets main.ml)
+ (deps main.eml.ml)
+ (action (run dream_eml %{deps} --workspace %{workspace_root})))
 
 
 (executable
-  (name connectFour)
-  (modules connectFour)
+  (name training)
+  (modules training)
   (libraries
-    main
-    core))
+    board
+    lib
+    core)
+  (preprocess (pps ppx_jane )))
+; bisect_ppx
+    ; dream))
+    
+ ;(rule
+ ; (targets template.ml)
+ ; (deps template.eml.ml)
+ ; (action (run dream_eml %{deps} --workspace %{workspace_root})))
+
+
+
+ (data_only_dirs _esy esy.lock lib node_modules)    

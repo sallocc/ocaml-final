@@ -1,9 +1,11 @@
 (rule
   (target final.zip)
   (deps 
-    src/connectFour.ml
-    src/main.ml
+    src/board.ml
+    src/lib.ml
     src/dune
+    src/main.ml
+    src/training.ml
     tests/tests.ml
     tests/dune
   )
