@@ -37,7 +37,7 @@ let gram = 4
 
 let num_games = 50000
 
-let random_d = random_distribution
+let random_d = standard_distribution
 
 let repeat = 10
 
@@ -109,7 +109,7 @@ let train_player1 player1 =
 let () =
   (* write_sexp_to_file ("dist.txt") (Pos_grams.ngrams 1 1 []); *)
   correct_directory "set to the right directory";
-  vs_itself "player1.txt" 
+  train_player1 "player1.txt" 
 
 
 (* let train_player2 player2 =
