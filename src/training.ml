@@ -33,15 +33,11 @@ let switch_player history =
 
 let empty_d = Pos_grams.ngrams 1 1 []
 
-let store = "dist.txt"
-
-let original_dist = sexp_to_map store
-
-let gram = 6
+let gram = 3
 
 let num_games = 10000
 
-let random_d = random_distribution
+let random_d = standard_distribution
 
 let repeat = 10
 
@@ -66,7 +62,7 @@ let vs_random store_file =
           play new_dist (history @ [ ai_dist_move random_d history ]) i
     else write_sexp_to_file store_file new_dist
   in
-  play original_dist [] 0
+  play (sexp_to_map store_file) [] 0
 
 let vs_itself store_file =
   let rec play new_dist history i =
@@ -86,7 +82,7 @@ let vs_itself store_file =
             i
     else write_sexp_to_file store_file new_dist
   in
-  play original_dist [] 0
+  play (sexp_to_map store_file) [] 0
 
 let train_player1 player1 =
   let rec play new_dist history i =
@@ -95,8 +91,8 @@ let train_player1 player1 =
       match is_game_over (history_to_board history) history with
       | true, -1 -> play new_dist [] i
       | true, p ->
-          write_string_to_file "hist.txt"
-            (List.sexp_of_t Pos.sexp_of_t history |> Sexp.to_string);
+        write_string_to_file "hist.txt"
+        (List.sexp_of_t Pos.sexp_of_t history |> Sexp.to_string);
           play
             (merge_distribution (Pos_grams.ngrams gram p history) new_dist)
             [] (i + 1)
@@ -108,9 +104,15 @@ let train_player1 player1 =
           else play new_dist (history @ [ ai_dist_move random_d history ]) i
     else write_sexp_to_file player1 new_dist
   in
-  play original_dist [] 0
+  play (sexp_to_map "player1.txt") [] 0
 
-let train_player2 player2 =
+let () =
+  (* write_sexp_to_file ("dist.txt") (Pos_grams.ngrams 1 1 []); *)
+  correct_directory "set to the right directory";
+  vs_itself "player1.txt" 
+
+
+(* let train_player2 player2 =
   let rec play new_dist history i =
     switch_player history;
     if i < num_games then
@@ -130,7 +132,7 @@ let train_player2 player2 =
           else play new_dist (history @ [ ai_dist_move random_d history ]) i
     else write_sexp_to_file player2 new_dist
   in
-  play original_dist [] 0
+  play (sexp_to_map "player2.txt") [] 0
 
 let train_both player1 player2 =
   let rec play p1 p2 history i =
@@ -138,16 +140,16 @@ let train_both player1 player2 =
     if i < num_games then
       match is_game_over (history_to_board history) history with
       | true, -1 -> play p1 p2 [] i
-      | true, 1 ->
+      | true, _ ->
           write_string_to_file "hist.txt"
             (List.sexp_of_t Pos.sexp_of_t history |> Sexp.to_string);
           play
             (merge_distribution (Pos_grams.ngrams gram 1 history) p1) p2
             [] (i + 1)
-      | true, _ ->
+      (* | true, _ ->
           play p1
             (merge_distribution (Pos_grams.ngrams gram 2 history) p2)
-            [] (i + 1)
+            [] (i + 1) *)
       | false, _ ->
           if List.length history % 2 = 1 then
             play p1 p2
@@ -160,9 +162,4 @@ let train_both player1 player2 =
     else write_sexp_to_file player2 p2;
     write_sexp_to_file player1 p1
   in
-  play (sexp_to_map "player1.txt") (sexp_to_map "player2.txt") [] 0
-
-let () =
-  (* write_sexp_to_file ("dist.txt") (Pos_grams.ngrams 1 1 []); *)
-  correct_directory "set to the right directory";
-  train_player1 "player1.txt"
+  play (sexp_to_map "player1.txt") (sexp_to_map "player2.txt") [] 0 *)

@@ -88,15 +88,7 @@ module N_grams (Token : Map.Key) = struct
       Token_list_map.empty
 end
 
-let list_to_map (l : 'a list) (map : ('a, int, 'b) Map_intf.Map.t) :
-    ('a, int, 'b) Map_intf.Map.t =
-  List.fold l ~init:map ~f:(fun acc x ->
-      Map.update acc x ~f:(fun v -> match v with Some a -> a + 1 | None -> 1))
-
-(* NEW LIB functions for AI operation CHECK HERE*)
-let player1_first_move = (0, 3)
-
-let player1_second_move pos =
+let player1_second_move (pos : int * int) : int * int =
   match pos with
   | 0, 0 -> (1, 3)
   | 0, 1 -> (1, 1)
@@ -107,7 +99,7 @@ let player1_second_move pos =
   | 0, 6 -> (1, 3)
   | _ -> invalid_arg "invaid input"
 
-let player2_first_move pos =
+let player2_first_move (pos : int * int) : int * int =
   match pos with
   | 0, 0 -> (0, 3)
   | 0, 1 -> (0, 2)
@@ -117,9 +109,6 @@ let player2_first_move pos =
   | 0, 5 -> (0, 4)
   | 0, 6 -> (0, 3)
   | _ -> invalid_arg "invaid input"
-
-(* 1/7 1/7 1/7 1/7 1/7 1/7 1/7 *)
-let random_distribution _ = Random.int 7
 
 let distribution_maker (p0 : int) (p1 : int) (p2 : int) (p3 : int) (p4 : int)
     (p5 : int) (p6 : int) : int =
@@ -134,16 +123,12 @@ let distribution_maker (p0 : int) (p1 : int) (p2 : int) (p3 : int) (p4 : int)
     else 0
   else invalid_arg "invalid distribution"
 
-let standard_distribution _ = distribution_maker 2 14 20 27 20 15 2
-
-let left_skewed_distribution _ = distribution_maker 17 20 17 15 13 10 8
-
-let right_skewed_distribution _ = distribution_maker 8 10 13 15 17 20 17
+let standard_distribution _ : int = distribution_maker 2 14 20 27 20 15 2
 
 let every_other_chunks (n : int) (odd_even : int) (l : 'a list) : 'a list list =
   chunks n l |> List.filteri ~f:(fun i _ -> i % 2 = odd_even)
 
-let pair a n =
+let pair (a : 'a * 'a) (n : int) : 'a =
   match (a, n) with
   | (x, _), 1 -> x
   | (_, y), 2 -> y
@@ -181,14 +166,9 @@ let get_last_n_moves (n : int) (history : (int * int) list) : (int * int) list =
 (* let bag_to_list (b : 'a Bag.t) =
    Bag.fold b ~init:[] ~f:(fun acc a -> a :: acc) *)
 
-(* Array.make_matrix ~dimx:6 ~dimy:7 0;; *)
-(* let history_to_board history board =
-   List.foldi history ~init:board ~f:(fun i acc (j, k) ->
-       List.mapi acc ~f:(fun i1 x ->
-           if i1 = j then
-             List.mapi x ~f:(fun i2 y -> if i2 = k then (i % 2) + 1 else y)
-           else x)) *)
-let merge_distribution new_d og_d =
+let merge_distribution (new_d : ('a, 'b Bag.t, 'c) Map_intf.Map.t)
+    (og_d : ('a, 'b Bag.t, 'c) Map_intf.Map.t) :
+    ('a, 'b Bag.t, 'c) Map_intf.Map.t =
   Map.fold new_d ~init:og_d ~f:(fun ~key:k ~data:v acc ->
       Map.update acc k ~f:(fun data ->
           match data with
@@ -197,12 +177,23 @@ let merge_distribution new_d og_d =
               Bag.transfer ~src:v ~dst:x;
               x))
 
-let rand_8 _ = Random.int 8
+let around_last_move (history : ('a * int) list) : int =
+  match List.nth_exn history (List.length history - 1) with
+  | _, 6 -> distribution_maker 1 3 8 21 22 30 15
+  | _, 5 -> distribution_maker 1 3 5 19 30 29 13
+  | _, 4 -> distribution_maker 1 6 10 24 27 22 10
+  | _, 3 -> standard_distribution 0
+  | _, 2 -> distribution_maker 10 22 27 24 10 6 1
+  | _, 1 -> distribution_maker 13 29 30 19 5 3 1
+  | _, 0 -> distribution_maker 15 30 22 21 8 3 1
+  | _, _ -> invalid_arg "invalid history"
 
-let ai_dist_move dist history =
+let ai_dist_move (dist : int -> int) (history : (int * int) list) : int * int =
   if List.length history >= 42 then invalid_arg "invalid history"
   else
-    let m = dist 0 in
+    let m =
+      if List.length history = 0 then dist 0 else around_last_move history
+    in
     let rec until_valid level move =
       if level < 6 then
         if ai_is_valid_move (level, move) history then (level, move)
@@ -211,27 +202,12 @@ let ai_dist_move dist history =
     in
     until_valid 0 m
 
-let rec look_around dist history =
-  let move =
-    match List.nth history (List.length history - 1) with
-    | None -> (0, 3)
-    | Some (x, y) -> (
-        match rand_8 x with
-        | 0 | 2 -> (x, y + 1)
-        | 1 | 3 -> (x, y - 1)
-        | 6 | 7 -> (x + 1, y)
-        | 4 -> (x, y + 2)
-        | 5 -> (x, y - 2)
-        | _ -> ai_dist_move dist history)
-  in
-  if ai_is_valid_move move history then move else look_around dist history
-
-let desome x = match x with Some x -> x | _ -> invalid_arg "none case"
+let desome (x : 'a option) : 'a = match x with Some x -> x | _ -> invalid_arg "none case"
 
 let ai_move history last_n dist_map dist num_repeat =
   (* pre programed moves *)
   match List.length history with
-  | 0 -> player1_first_move
+  | 0 -> (0, 3)
   | 1 -> player2_first_move (List.hd_exn history)
   | 2 -> player1_second_move (List.tl_exn history |> List.hd_exn)
   | _ ->
@@ -242,38 +218,10 @@ let ai_move history last_n dist_map dist num_repeat =
               if ai_is_valid_move (desome (sample x)) history then
                 desome (sample x)
               else re_move (i + 1)
-          | None -> look_around dist history
-        else look_around dist history
+          | None -> ai_dist_move dist history
+        else ai_dist_move dist history
       in
       re_move 0
-
-(* execution *)
-
-(* for trainning purposes *)
-(* let move_given_dist (history : (int * int) list)  ~(dist) =
-   if dist _ *)
-
-(* 3 GRAMS: *)
-(* IF AI go second *)
-(* n chunks if ai wins start from begining sample every other sequence *)
-(* if user wins chops out the first move and sample ever other sequences *)
-
-(* IF AI go first *)
-(* n chunks if ai wins start from the second move chop off the first, sample every other sequence *)
-(* if user wins start sampling from first move and sample ever other sequences *)
-
-(* 4 GRAMS: *)
-(* IF AI go first *)
-(* n chunks if ai wins start from begining sample every other sequence *)
-(* if user wins chops out the first move and sample ever other sequences *)
-
-(* IF AI go second *)
-(* n chunks if ai wins start from the second move chop off the first, sample every other sequence *)
-(* if user wins start sampling from first move and sample ever other sequences *)
-(* let () = Out_channel.write_all "store.txt" ~data:[1;2;3;4] *)
-(* let currPlayer = ref 1 *)
-(* AI takes in the current game move history to decide which move to make
-   if a move is not valid repeat until valid or -1 +1 -2 +2 from the AI's last return.... *)
 
 (*
         0 1 2 3 4 5 6

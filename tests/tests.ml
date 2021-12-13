@@ -3,7 +3,6 @@ open OUnit2
 open Lib
 open Board
 
-(* OLD Lib Test *)
 let a_list = [ "a"; "b"; "c"; "d"; "e" ]
 
 let test_invalid_chunks _ =
@@ -48,8 +47,6 @@ let fold_sample_test n player l =
     (N.ngrams n player l |> Map.data)
     ~init:[]
     ~f:(fun acc a -> acc @ [ bag_to_list a [] ])
-(* let key_sample_test n player l =
-   (N.ngrams n player l |> Map.keys) *)
 
 let test_ngrams _ =
   assert_equal [ [ 1; 3; 5; 7; 9 ] ] @@ fold_sample_test 1 1 example_l;
@@ -64,55 +61,6 @@ let test_ngrams _ =
   assert_equal [] @@ fold_sample_test 1 2 [];
   assert_equal [ [ 1 ] ] @@ fold_sample_test 1 1 [ 1 ];
   assert_equal [] @@ fold_sample_test 1 2 [ 1 ]
-
-(* let test_sample_sequence _ =
-   assert_equal [ 2; 3; 4; 4; 4; 4; 4; 4; 4; 4 ]
-   @@ N.sample_sequence (N.ngrams 3 example_l) ~max_length:10
-        ~initial_ngram:[ 2; 3 ];
-   assert_equal [ 2; 3; 4 ]
-   @@ N.sample_sequence (N.ngrams 3 example_l) ~max_length:3
-        ~initial_ngram:[ 2; 3 ];
-   assert_equal [ 2; 3 ]
-   @@ N.sample_sequence (N.ngrams 3 example_l) ~max_length:2
-        ~initial_ngram:[ 2; 3 ];
-   assert_equal [ 2 ]
-   @@ N.sample_sequence (N.ngrams 3 example_l) ~max_length:1
-        ~initial_ngram:[ 2; 3 ];
-   assert_equal [ 1 ]
-   @@ N.sample_sequence (N.ngrams 3 example_l) ~max_length:10
-        ~initial_ngram:[ 1 ];
-   assert_equal [ 1; 2; 3; 4; 4; 4; 4; 4; 4; 4 ]
-   @@ N.sample_sequence (N.ngrams 2 example_l) ~max_length:10
-        ~initial_ngram:[ 1 ];
-   assert_equal [ 2; 3; 4; 4; 4; 4; 4; 4; 4; 4 ]
-   @@ N.sample_sequence (N.ngrams 2 example_l) ~max_length:10
-        ~initial_ngram:[ 2 ];
-   assert_equal [ 3; 4; 4; 4; 4; 4; 4; 4; 4; 4 ]
-   @@ N.sample_sequence (N.ngrams 2 example_l) ~max_length:10
-        ~initial_ngram:[ 3 ];
-   assert_equal [ 1; 2; 3 ]
-   @@ N.sample_sequence (N.ngrams 1 []) ~max_length:3 ~initial_ngram:[ 1; 2; 3 ];
-   assert_equal [ 1; 2; 3 ]
-   @@ N.sample_sequence (N.ngrams 1 []) ~max_length:5 ~initial_ngram:[ 1; 2; 3 ];
-   assert_equal []
-   @@ N.sample_sequence (N.ngrams 1 []) ~max_length:0 ~initial_ngram:[ 1; 2; 3 ];
-   assert_equal [ 1 ]
-   @@ N.sample_sequence (N.ngrams 1 []) ~max_length:1 ~initial_ngram:[ 1; 2; 3 ];
-   assert_equal [ 1; 2 ]
-   @@ N.sample_sequence (N.ngrams 1 []) ~max_length:2 ~initial_ngram:[ 1; 2; 3 ];
-   assert_equal [ 1; 2; 3; 4; 4; 4; 2; 2; 3; 1 ]
-   @@ N.sample_sequence (N.ngrams 4 example_l) ~max_length:12
-        ~initial_ngram:[ 1; 2; 3 ];
-   assert_equal [ 1; 2; 3; 4; 4 ]
-   @@ N.sample_sequence (N.ngrams 4 example_l) ~max_length:5
-        ~initial_ngram:[ 1; 2; 3 ];
-   assert_equal []
-   @@ N.sample_sequence (N.ngrams 1 []) ~max_length:5 ~initial_ngram:[];
-   assert_equal [ 1 ]
-   @@ N.sample_sequence (N.ngrams 1 [ 1; 2; 3 ]) ~max_length:5 ~initial_ngram:[];
-   assert_equal [ 2 ]
-   @@ N.sample_sequence (N.ngrams 1 [ 2; 3 ]) ~max_length:5 ~initial_ngram:[] *)
-
 let ngram_test = "N Gram" >: test_list [ "ngrams" >:: test_ngrams ]
 
 let test_desome _ = assert_equal 1 @@ desome (Some 1)
@@ -127,62 +75,8 @@ let my_test =
        [ "desome" >:: test_desome; "invalid_desome" >:: test_invalid_desome ]
 
 module Int_Map = Map.Make (Int)
-
-let ee = list_to_map [ 4; 2; 3; 2; 3; 5; 5; 5; 5; 5; 3; 1; 1; 4 ] Int_Map.empty
-
-let test_list_to_map _ =
-  assert_equal [ 1; 2; 3; 4; 5 ] @@ Map.keys ee;
-  assert_equal [ 2; 2; 3; 2; 5 ] @@ Map.data ee;
-  assert_equal [] @@ Map.keys Int_Map.empty;
-  assert_equal [] @@ Map.data Int_Map.empty
-
 module String_list = List_key (String)
 module Str_List_Map = Map.Make (String_list)
-
-let a =
-  list_to_map
-    [
-      [ "1" ];
-      [ "4" ];
-      [ "5" ];
-      [ "2" ];
-      [ "3" ];
-      [ "2" ];
-      [ "1" ];
-      [ "3" ];
-      [ "3" ];
-      [ "9"; "9" ];
-    ]
-    Str_List_Map.empty
-
-let b =
-  list_to_map
-    [
-      [ "3" ];
-      [ "3" ];
-      [ "3" ];
-      [ "2" ];
-      [ "2" ];
-      [ "2" ];
-      [ "1" ];
-      [ "1" ];
-      [ "1" ];
-    ]
-    Str_List_Map.empty
-
-(* BASE QUICK CHECK *)
-let rand_string =
-  let string_gen = String.quickcheck_generator in
-  Quickcheck.random_value ~seed:`Nondeterministic string_gen
-
-let p2_test =
-  "A4 P2 tests"
-  >: test_list
-       [
-         "list_to_map" >:: test_list_to_map;
-         (* "most_frequent_grams" >:: test_most_frequent_grams;
-            "rand_num" >:: test_rand_num; *)
-       ]
 
 let test_wining_sequence _ =
   assert_equal [ [ 1; 2; 3 ]; [ 3; 4; 5 ]; [ 5; 6; 7 ] ]
@@ -321,15 +215,11 @@ let test_ai_move _ =
   assert_equal (0, 4)
   @@ ai_move [ (0, 1); (0, 2); (0, 3) ] 3 bcd standard_distribution 10
 
-let test_look_around _ =
-  assert_equal (5, 6) @@ look_around standard_distribution almost_full_h
-
 let new_lib_test =
   "new lib test"
   >: test_list
        [
          (* "Merge Distribution" >:: test_merge_distribution; *)
-         "Look Around" >:: test_look_around;
          "AI Move" >:: test_ai_move;
          "AI Dist Move" >:: test_ai_dist_move;
          "History to Board" >:: test_history_to_board;
@@ -550,7 +440,6 @@ let series =
          exercise1_2_test;
          ngram_test;
          my_test;
-         p2_test;
          new_lib_test;
          board_test;
        ]

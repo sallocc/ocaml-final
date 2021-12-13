@@ -40,7 +40,7 @@ let changeRow (xPos : int) (newVal : int) (row : int list) : int list =
   | [] -> failwith "Invalid position"
   | _ :: tl -> List.append firstPositions (newVal :: tl)
 
-let rec changePos (currX : int) (currY : int) (xPos : int) (yPos : int)
+let rec changePos (currY : int) (currX : int) (yPos : int) (xPos : int)
     (newVal : int) (board : gameboard) : gameboard =
   if xPos < 0 || xPos > 6 || yPos < 0 || yPos > 5 then
     failwith "Invalid position"
