@@ -26,31 +26,30 @@ let sexp_to_map filename =
   Write_Distribution.t_of_sexp (Sexp.load_sexp filename)
 
 let abc =
-  Pos_grams.ngrams 2 1
-    [ (0, 1); (0, 2); (0, 3); (0, 4); (0, 5); (0, 6); (0, 7); (0, 8); (0, 9) ]
+  Pos_grams.ngrams 4 1
+    [ (0, 1); (0, 2); (0, 3); (0, 4); (0, 5); (0, 6); (0, 7)]
 
 let def =
   Pos_grams.ngrams 2 2
     [ (0, 1); (0, 2); (0, 3); (0, 4); (0, 5); (0, 6); (0, 7); (0, 8); (0, 9) ]
 
 let winer history board = 
-  match history_to_board history board |> isGameOver with 
-  | true,p -> p 
+  match history_to_board history board |> (is_game_over []) with 
+  | true,p -> p
   | false,_ -> 0
 
 let record_distribution n player history = 
   Pos_grams.ngrams n player history
 
-let ai_random_move dist history = 
-  (* a random move from distribution *)
-  let rec until_valid level = 
-    if is_valid_move (level,dist 0) history then (level,dist 0) 
-    else until_valid (level+1)
+
+(* a random move from distribution *)
+(* if not valid move up if still not re draw *)
 
 
-let () =
+
+(* let () =
   standard_distribution
-  failwith "bad"
+  failwith "bad" *)
 (* let () = correct_directory 1 ; write_sexp_to_file "abc.txt" abc *)
 (* let dis = sexp_to_map "abc.txt" *)
 

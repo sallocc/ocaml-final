@@ -115,10 +115,10 @@ let test_ngrams _ =
 
 let ngram_test = "N Gram" >: test_list [ "ngrams" >:: test_ngrams ]
 
-let test_desome _ = assert_equal 1 @@ N.desome (Some 1)
+let test_desome _ = assert_equal 1 @@ desome (Some 1)
 
 let test_invalid_desome _ =
-  let invalid_desome _ = N.desome None in
+  let invalid_desome _ = desome None in
   assert_raises (Invalid_argument "none case") invalid_desome
 
 let my_test =
@@ -170,33 +170,6 @@ let b =
     ]
     Str_List_Map.empty
 
-let test_most_frequent_grams _ =
-  assert_equal [ ([ "3" ], 3) ]
-  @@ most_frequent_grams a 1 ~compare:String_list.compare;
-  assert_equal [ ([ "1" ], 2); ([ "3" ], 3) ]
-  @@ most_frequent_grams a 2 ~compare:String_list.compare;
-  assert_equal [ ([ "2" ], 2); ([ "1" ], 2); ([ "3" ], 3) ]
-  @@ most_frequent_grams a 3 ~compare:String_list.compare;
-  assert_equal [ ([ "4" ], 1); ([ "2" ], 2); ([ "1" ], 2); ([ "3" ], 3) ]
-  @@ most_frequent_grams a 4 ~compare:String_list.compare;
-  assert_equal
-    [ ([ "5" ], 1); ([ "4" ], 1); ([ "2" ], 2); ([ "1" ], 2); ([ "3" ], 3) ]
-  @@ most_frequent_grams a 5 ~compare:String_list.compare;
-  assert_equal
-    [
-      ([ "9"; "9" ], 1);
-      ([ "5" ], 1);
-      ([ "4" ], 1);
-      ([ "2" ], 2);
-      ([ "1" ], 2);
-      ([ "3" ], 3);
-    ]
-  @@ most_frequent_grams a 6 ~compare:String_list.compare;
-  assert_equal [ ([ "2" ], 3); ([ "1" ], 3) ]
-  @@ most_frequent_grams b 2 ~compare:String_list.compare
-
-let test_rand_num _ = assert_equal 0 @@ rand_num [ 1 ] 1
-
 (* BASE QUICK CHECK *)
 let rand_string =
   let string_gen = String.quickcheck_generator in
@@ -207,8 +180,8 @@ let p2_test =
   >: test_list
        [
          "list_to_map" >:: test_list_to_map;
-         "most_frequent_grams" >:: test_most_frequent_grams;
-         "rand_num" >:: test_rand_num;
+         (* "most_frequent_grams" >:: test_most_frequent_grams;
+            "rand_num" >:: test_rand_num; *)
        ]
 
 let test_wining_sequence _ =
@@ -237,9 +210,9 @@ let test_player2_frist_move _ =
   assert_equal (0, 4) @@ player2_frist_move (0, 5);
   assert_equal (0, 3) @@ player2_frist_move (0, 6)
 
-let test_is_valid_move _ =
-  assert_equal false @@ is_valid_move (0, 0) [ (0, 0) ];
-  assert_equal true @@ is_valid_move (0, 2) [ (0, 0) ]
+let test_ai_is_valid_move _ =
+  assert_equal false @@ ai_is_valid_move (0, 0) [ (0, 0) ];
+  assert_equal true @@ ai_is_valid_move (0, 2) [ (0, 0) ]
 
 let test_get_last_n_moves _ =
   assert_equal [] @@ get_last_n_moves 5 [];
@@ -257,12 +230,12 @@ let test_get_last_n_moves _ =
 let test_history_to_board _ =
   assert_equal
     [
-      [ 0; 0; 0; 1; 0; 0; 0 ];
+      [ 1; 0; 0; 1; 0; 0; 0 ];
       [ 0; 0; 0; 2; 0; 0; 0 ];
       [ 0; 0; 0; 0; 0; 0; 0 ];
       [ 0; 0; 0; 0; 0; 0; 0 ];
       [ 0; 0; 0; 0; 0; 0; 0 ];
-      [ 1; 0; 0; 0; 0; 0; 0 ];
+      [ 0; 0; 0; 0; 0; 0; 0 ];
     ]
   @@ history_to_board [ (0, 3); (1, 3); (0, 0) ] empty;
   assert_equal
@@ -278,18 +251,90 @@ let test_history_to_board _ =
        [ (0, 3); (1, 3); (0, 0); (2, 3); (0, 1); (3, 3); (0, 2) ]
        empty
 
+let almost_full_h =
+  [
+    (0, 0);
+    (0, 1);
+    (0, 2);
+    (0, 3);
+    (0, 4);
+    (0, 5);
+    (0, 6);
+    (1, 0);
+    (1, 1);
+    (1, 2);
+    (1, 3);
+    (1, 4);
+    (1, 5);
+    (1, 6);
+    (2, 0);
+    (2, 1);
+    (2, 2);
+    (2, 3);
+    (2, 4);
+    (2, 5);
+    (2, 6);
+    (3, 0);
+    (3, 1);
+    (3, 2);
+    (3, 3);
+    (3, 4);
+    (3, 5);
+    (3, 6);
+    (4, 0);
+    (4, 1);
+    (4, 2);
+    (4, 3);
+    (4, 4);
+    (4, 5);
+    (4, 6);
+    (5, 0);
+    (5, 1);
+    (5, 2);
+    (5, 3);
+    (5, 4);
+    (5, 5);
+  ]
+
+let full_h = almost_full_h @ [ (5, 6) ]
+
+let test_ai_dist_move _ =
+  assert_equal (5, 6) @@ ai_dist_move standard_distribution almost_full_h
+
+module Pos = struct
+  type t = int * int [@@deriving compare, sexp]
+end
+
+module Pos_grams = N_grams (Pos)
+
+let abc =
+  Pos_grams.ngrams 4 1
+    [ (0, 1); (0, 2); (0, 3); (0, 4); (0, 5); (0, 6); (0, 7) ]
+
+let bcd =
+  Pos_grams.ngrams 4 2
+    [ (0, 1); (0, 2); (0, 3); (0, 4); (0, 5); (0, 6); (0, 7) ]
+
+let test_ai_move _ =
+  assert_equal (0, 5)
+  @@ ai_move [ (0, 2); (0, 3); (0, 4) ] 3 abc standard_distribution 10;
+  assert_equal (0, 4)
+  @@ ai_move [ (0, 1); (0, 2); (0, 3) ] 3 bcd standard_distribution 10
+
 let new_lib_test =
   "new lib test"
   >: test_list
        [
-        (* "Merge Distribution" >:: test_merge_distribution; *)
-       "History to Board" >:: test_history_to_board;
-       "Winning Sequence" >:: test_wining_sequence;
-       "Pair" >:: test_pair;
-       "Random Move" >:: test_random_distribution;
-       "Player2 Frist Move" >:: test_player2_frist_move;
-       "Test Is Valid Move" >:: test_is_valid_move;
-       "Test Get Last N Moves" >:: test_get_last_n_moves;
+         (* "Merge Distribution" >:: test_merge_distribution; *)
+         "AI Move" >:: test_ai_move;
+         "AI Dist Move" >:: test_ai_dist_move;
+         "History to Board" >:: test_history_to_board;
+         "Winning Sequence" >:: test_wining_sequence;
+         "Pair" >:: test_pair;
+         "Random Move" >:: test_random_distribution;
+         "Player2 Frist Move" >:: test_player2_frist_move;
+         "Test Is Valid Move" >:: test_ai_is_valid_move;
+         "Test Get Last N Moves" >:: test_get_last_n_moves;
        ]
 
 let gameOverBoard1 =
@@ -334,13 +379,13 @@ let gameOverBoard4 =
 
 let game_over_basic _ =
   setPlayer 1;
-  assert_equal (true, 1) @@ isGameOver gameOverBoard1;
+  assert_equal (true, 1) @@ is_game_over gameOverBoard1 [];
   setPlayer 1;
-  assert_equal (true, 1) @@ isGameOver gameOverBoard2;
+  assert_equal (true, 1) @@ is_game_over gameOverBoard2 [];
   setPlayer 1;
-  assert_equal (true, 1) @@ isGameOver gameOverBoard3;
+  assert_equal (true, 1) @@ is_game_over gameOverBoard3 [];
   setPlayer 2;
-  assert_equal (true, 2) @@ isGameOver gameOverBoard4
+  assert_equal (true, 2) @@ is_game_over gameOverBoard4 []
 
 (* Actual game played with myself *)
 let gameOverBoard5 =
@@ -375,11 +420,13 @@ let gameOverBoard7 =
 
 let game_over_complex _ =
   setPlayer 2;
-  assert_equal (true, 2) @@ isGameOver gameOverBoard5;
+  assert_equal (true, 2) @@ is_game_over gameOverBoard5 [];
   setPlayer 1;
-  assert_equal (true, 1) @@ isGameOver gameOverBoard6;
+  assert_equal (true, 1) @@ is_game_over gameOverBoard6 [];
   setPlayer 1;
-  assert_equal (true, 1) @@ isGameOver gameOverBoard7
+  assert_equal (true, 1) @@ is_game_over gameOverBoard7 [];
+  setPlayer 1;
+  assert_equal (true, -1) @@ is_game_over empty full_h
 
 let moveBoard1 =
   [

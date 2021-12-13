@@ -86,32 +86,12 @@ module N_grams (Token : Map.Key) = struct
   let ngrams (n : int) (player : int) (l : Token.t list) : distribution =
     make_distribution (make_keys n player l) (make_kv n player l)
       Token_list_map.empty
-
-  let desome (x : Token.t option) : Token.t =
-    match x with Some x -> x | _ -> invalid_arg "none case"
 end
-
-let rand_num (file_word_list : 'a list) (n : int) : int =
-  Random.int (List.length file_word_list - n + 1)
 
 let list_to_map (l : 'a list) (map : ('a, int, 'b) Map_intf.Map.t) :
     ('a, int, 'b) Map_intf.Map.t =
   List.fold l ~init:map ~f:(fun acc x ->
       Map.update acc x ~f:(fun v -> match v with Some a -> a + 1 | None -> 1))
-
-let most_frequent_grams (map : ('a, int, 'b) Map_intf.Map.t) (n : int)
-    ~(compare : 'a -> 'a -> int) : ('a * int) list =
-  let rec list_to_map m kv =
-    if List.length kv < n then
-      let make_kv =
-        Map.fold m ~init:([], 0) ~f:(fun ~key:x ~data:y (a, b) ->
-            if y > b || (y = b && compare a x = 1) then (x, y) else (a, b))
-      in
-      let remove_m = match make_kv with x, _ -> Map.remove m x in
-      list_to_map remove_m (make_kv :: kv)
-    else kv
-  in
-  list_to_map map []
 
 (* NEW LIB functions for AI operation CHECK HERE*)
 let player1_frist_move = (0, 3)
@@ -144,17 +124,17 @@ let random_distribution _ = Random.int 7
 let distribution_maker (p0 : int) (p1 : int) (p2 : int) (p3 : int) (p4 : int)
     (p5 : int) (p6 : int) : int =
   if p6 + p5 + p4 + p3 + p1 + p2 + p0 = 100 then
-    let r = Random.int 100 in
+    let r = Random.int 100 +1 in
     if r <= p6 then 6
     else if r <= p6 + p5 then 5
     else if r <= p6 + p5 + p4 then 4
     else if r <= p6 + p5 + p4 + p3 then 3
     else if r <= p6 + p5 + p4 + p3 + p2 then 2
-    else if r <= p6 + p5 + p4 + p3 + p1 then 1
+    else if r <= p6 + p5 + p4 + p3 + p2 + p1 then 1
     else 0
   else invalid_arg "invalid distribution"
 
-let standard_distribution _ = distribution_maker 9 13 18 20 18 13 9
+let standard_distribution _ = distribution_maker 5 14 20 22 20 14 5
 
 let left_skewed_distribution _ = distribution_maker 17 20 17 15 13 10 8
 
@@ -170,7 +150,7 @@ let pair a n =
   | _ -> invalid_arg "wrong n"
 
 (* tested correct *)
-let is_valid_move (move : int * int) (history : (int * int) list) : bool =
+let ai_is_valid_move (move : int * int) (history : (int * int) list) : bool =
   pair (List.unzip history) 1
   |> List.foldi ~init:true ~f:(fun i acc x ->
          if
@@ -213,6 +193,39 @@ let merge_distribution new_d og_d =
           | Some x ->
               Bag.transfer ~src:v ~dst:x;
               x))
+
+let ai_dist_move dist history =
+  if List.length history >= 42 then invalid_arg "invalid history"
+  else
+    let m = dist 0 in
+    let rec until_valid level move =
+      if level < 6 then
+        if ai_is_valid_move (level, move) history then (level, move)
+        else until_valid (level + 1) move
+      else until_valid 0 (dist 1)
+    in
+    until_valid 0 m
+
+let desome x = match x with Some x -> x | _ -> invalid_arg "none case"
+
+let ai_move history last_n dist_map dist num_repeat =
+  (* pre programed moves *)
+  match List.length history with
+  | 0 -> player1_frist_move
+  | 1 -> player2_frist_move (List.hd_exn history) 
+  | 2 -> player1_second_move (List.tl_exn history |> List.hd_exn )
+  | _ ->
+      let rec re_move i =
+        if i < num_repeat then
+          match Map.find dist_map (get_last_n_moves last_n history) with
+          | Some x ->
+              if ai_is_valid_move (desome (sample x)) history then
+                desome (sample x)
+              else re_move (i + 1)
+          | None -> ai_dist_move dist history
+        else ai_dist_move dist history
+      in
+      re_move 0
 
 (* execution *)
 

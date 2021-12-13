@@ -4,8 +4,6 @@ open Core
 
 type gameboard = int list list
 
-type move = int
-
 let empty =
   [
     [ 0; 0; 0; 0; 0; 0; 0 ];
@@ -57,13 +55,13 @@ let rec changePos (currX : int) (currY : int) (xPos : int) (yPos : int)
 (* Given a board and a column to place a piece, it returns None if the move is
    invalid, and otherwise returns the updated board with the lowest available position
    in the column provided filled. *)
-let rec getAvailableSpace (board : gameboard) (col : move) (currRow : int) :
+let rec getAvailableSpace (board : gameboard) (col : int) (currRow : int) :
     int * int =
   if getPos col currRow board = 0 then (col, currRow)
   else getAvailableSpace board col (currRow + 1)
 
 (* history is updated as well*)
-let makeMove (board : gameboard) (col : move) : gameboard option =
+let makeMove (board : gameboard) (col : int) : gameboard option =
   if getPos col 5 board <> 0 then None
   else
     let x, y = getAvailableSpace board col 0 in
@@ -128,7 +126,7 @@ let checkWin (board : gameboard) : bool * int =
     !currPlayer )
 
 (* -1 if it's draw else 1 or 2 *)
-let isGameOver board h =
+let is_game_over board h =
   match (List.length h, checkWin board) with
   | 42, (false, _) -> (true, -1)
   | _, z -> z
