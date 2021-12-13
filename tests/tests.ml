@@ -201,14 +201,14 @@ let test_pair _ =
 (*  for coverage purpose*)
 let test_random_distribution _ = assert_equal 0 @@ (random_distribution 1 * 0)
 
-let test_player2_frist_move _ =
-  assert_equal (0, 3) @@ player2_frist_move (0, 0);
-  assert_equal (0, 2) @@ player2_frist_move (0, 1);
-  assert_equal (0, 3) @@ player2_frist_move (0, 2);
-  assert_equal (0, 3) @@ player2_frist_move (0, 3);
-  assert_equal (0, 3) @@ player2_frist_move (0, 4);
-  assert_equal (0, 4) @@ player2_frist_move (0, 5);
-  assert_equal (0, 3) @@ player2_frist_move (0, 6)
+let test_player2_first_move _ =
+  assert_equal (0, 3) @@ player2_first_move (0, 0);
+  assert_equal (0, 2) @@ player2_first_move (0, 1);
+  assert_equal (0, 3) @@ player2_first_move (0, 2);
+  assert_equal (1, 3) @@ player2_first_move (0, 3);
+  assert_equal (0, 3) @@ player2_first_move (0, 4);
+  assert_equal (0, 4) @@ player2_first_move (0, 5);
+  assert_equal (0, 3) @@ player2_first_move (0, 6)
 
 let test_ai_is_valid_move _ =
   assert_equal false @@ ai_is_valid_move (0, 0) [ (0, 0) ];
@@ -237,7 +237,7 @@ let test_history_to_board _ =
       [ 0; 0; 0; 0; 0; 0; 0 ];
       [ 0; 0; 0; 0; 0; 0; 0 ];
     ]
-  @@ history_to_board [ (0, 3); (1, 3); (0, 0) ] empty;
+  @@ history_to_board [ (0, 3); (1, 3); (0, 0) ];
   assert_equal
     [
       [ 1; 1; 1; 1; 0; 0; 0 ];
@@ -249,7 +249,7 @@ let test_history_to_board _ =
     ]
   @@ history_to_board
        [ (0, 3); (1, 3); (0, 0); (2, 3); (0, 1); (3, 3); (0, 2) ]
-       empty
+      
 
 let almost_full_h =
   [
@@ -332,7 +332,7 @@ let new_lib_test =
          "Winning Sequence" >:: test_wining_sequence;
          "Pair" >:: test_pair;
          "Random Move" >:: test_random_distribution;
-         "Player2 Frist Move" >:: test_player2_frist_move;
+         "Player2 First Move" >:: test_player2_first_move;
          "Test Is Valid Move" >:: test_ai_is_valid_move;
          "Test Get Last N Moves" >:: test_get_last_n_moves;
        ]

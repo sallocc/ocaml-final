@@ -94,7 +94,7 @@ let list_to_map (l : 'a list) (map : ('a, int, 'b) Map_intf.Map.t) :
       Map.update acc x ~f:(fun v -> match v with Some a -> a + 1 | None -> 1))
 
 (* NEW LIB functions for AI operation CHECK HERE*)
-let player1_frist_move = (0, 3)
+let player1_first_move = (0, 3)
 
 let player1_second_move pos =
   match pos with
@@ -107,12 +107,12 @@ let player1_second_move pos =
   | 0, 6 -> (1, 3)
   | _ -> invalid_arg "invaid input"
 
-let player2_frist_move pos =
+let player2_first_move pos =
   match pos with
   | 0, 0 -> (0, 3)
   | 0, 1 -> (0, 2)
   | 0, 2 -> (0, 3)
-  | 0, 3 -> (0, 3)
+  | 0, 3 -> (1, 3)
   | 0, 4 -> (0, 3)
   | 0, 5 -> (0, 4)
   | 0, 6 -> (0, 3)
@@ -134,7 +134,7 @@ let distribution_maker (p0 : int) (p1 : int) (p2 : int) (p3 : int) (p4 : int)
     else 0
   else invalid_arg "invalid distribution"
 
-let standard_distribution _ = distribution_maker 5 14 20 22 20 14 5
+let standard_distribution _ = distribution_maker 2 14 20 27 20 15 2
 
 let left_skewed_distribution _ = distribution_maker 17 20 17 15 13 10 8
 
@@ -178,13 +178,12 @@ let get_last_n_moves (n : int) (history : (int * int) list) : (int * int) list =
    Bag.fold b ~init:[] ~f:(fun acc a -> a :: acc) *)
 
 (* Array.make_matrix ~dimx:6 ~dimy:7 0;; *)
-let history_to_board history board =
+(* let history_to_board history board =
   List.foldi history ~init:board ~f:(fun i acc (j, k) ->
       List.mapi acc ~f:(fun i1 x ->
           if i1 = j then
             List.mapi x ~f:(fun i2 y -> if i2 = k then (i % 2) + 1 else y)
-          else x))
-
+          else x)) *)
 let merge_distribution new_d og_d =
   Map.fold new_d ~init:og_d ~f:(fun ~key:k ~data:v acc ->
       Map.update acc k ~f:(fun data ->
@@ -211,8 +210,8 @@ let desome x = match x with Some x -> x | _ -> invalid_arg "none case"
 let ai_move history last_n dist_map dist num_repeat =
   (* pre programed moves *)
   match List.length history with
-  | 0 -> player1_frist_move
-  | 1 -> player2_frist_move (List.hd_exn history) 
+  | 0 -> player1_first_move
+  | 1 -> player2_first_move (List.hd_exn history) 
   | 2 -> player1_second_move (List.tl_exn history |> List.hd_exn )
   | _ ->
       let rec re_move i =

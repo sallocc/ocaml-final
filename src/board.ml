@@ -110,7 +110,7 @@ let checkWin (board : gameboard) : bool * int =
   in
   let diagonal2 board =
     List.foldi board ~init:false ~f:(fun i acc y ->
-        if i > 3 then acc
+        if i > 2 then acc
         else
           acc
           || List.foldi y ~init:false ~f:(fun j acc2 x ->
@@ -130,3 +130,10 @@ let is_game_over board h =
   match (List.length h, checkWin board) with
   | 42, (false, _) -> (true, -1)
   | _, z -> z
+
+let history_to_board history =
+  List.foldi history ~init:empty ~f:(fun i acc (j, k) ->
+      List.mapi acc ~f:(fun i1 x ->
+          if i1 = j then
+            List.mapi x ~f:(fun i2 y -> if i2 = k then (i % 2) + 1 else y)
+          else x))
