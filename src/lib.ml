@@ -181,13 +181,6 @@ let get_last_n_moves (n : int) (history : (int * int) list) : (int * int) list =
 (* let bag_to_list (b : 'a Bag.t) =
    Bag.fold b ~init:[] ~f:(fun acc a -> a :: acc) *)
 
-(* Array.make_matrix ~dimx:6 ~dimy:7 0;; *)
-(* let history_to_board history board =
-   List.foldi history ~init:board ~f:(fun i acc (j, k) ->
-       List.mapi acc ~f:(fun i1 x ->
-           if i1 = j then
-             List.mapi x ~f:(fun i2 y -> if i2 = k then (i % 2) + 1 else y)
-           else x)) *)
 let merge_distribution new_d og_d =
   Map.fold new_d ~init:og_d ~f:(fun ~key:k ~data:v acc ->
       Map.update acc k ~f:(fun data ->

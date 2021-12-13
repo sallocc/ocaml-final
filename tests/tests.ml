@@ -64,55 +64,6 @@ let test_ngrams _ =
   assert_equal [] @@ fold_sample_test 1 2 [];
   assert_equal [ [ 1 ] ] @@ fold_sample_test 1 1 [ 1 ];
   assert_equal [] @@ fold_sample_test 1 2 [ 1 ]
-
-(* let test_sample_sequence _ =
-   assert_equal [ 2; 3; 4; 4; 4; 4; 4; 4; 4; 4 ]
-   @@ N.sample_sequence (N.ngrams 3 example_l) ~max_length:10
-        ~initial_ngram:[ 2; 3 ];
-   assert_equal [ 2; 3; 4 ]
-   @@ N.sample_sequence (N.ngrams 3 example_l) ~max_length:3
-        ~initial_ngram:[ 2; 3 ];
-   assert_equal [ 2; 3 ]
-   @@ N.sample_sequence (N.ngrams 3 example_l) ~max_length:2
-        ~initial_ngram:[ 2; 3 ];
-   assert_equal [ 2 ]
-   @@ N.sample_sequence (N.ngrams 3 example_l) ~max_length:1
-        ~initial_ngram:[ 2; 3 ];
-   assert_equal [ 1 ]
-   @@ N.sample_sequence (N.ngrams 3 example_l) ~max_length:10
-        ~initial_ngram:[ 1 ];
-   assert_equal [ 1; 2; 3; 4; 4; 4; 4; 4; 4; 4 ]
-   @@ N.sample_sequence (N.ngrams 2 example_l) ~max_length:10
-        ~initial_ngram:[ 1 ];
-   assert_equal [ 2; 3; 4; 4; 4; 4; 4; 4; 4; 4 ]
-   @@ N.sample_sequence (N.ngrams 2 example_l) ~max_length:10
-        ~initial_ngram:[ 2 ];
-   assert_equal [ 3; 4; 4; 4; 4; 4; 4; 4; 4; 4 ]
-   @@ N.sample_sequence (N.ngrams 2 example_l) ~max_length:10
-        ~initial_ngram:[ 3 ];
-   assert_equal [ 1; 2; 3 ]
-   @@ N.sample_sequence (N.ngrams 1 []) ~max_length:3 ~initial_ngram:[ 1; 2; 3 ];
-   assert_equal [ 1; 2; 3 ]
-   @@ N.sample_sequence (N.ngrams 1 []) ~max_length:5 ~initial_ngram:[ 1; 2; 3 ];
-   assert_equal []
-   @@ N.sample_sequence (N.ngrams 1 []) ~max_length:0 ~initial_ngram:[ 1; 2; 3 ];
-   assert_equal [ 1 ]
-   @@ N.sample_sequence (N.ngrams 1 []) ~max_length:1 ~initial_ngram:[ 1; 2; 3 ];
-   assert_equal [ 1; 2 ]
-   @@ N.sample_sequence (N.ngrams 1 []) ~max_length:2 ~initial_ngram:[ 1; 2; 3 ];
-   assert_equal [ 1; 2; 3; 4; 4; 4; 2; 2; 3; 1 ]
-   @@ N.sample_sequence (N.ngrams 4 example_l) ~max_length:12
-        ~initial_ngram:[ 1; 2; 3 ];
-   assert_equal [ 1; 2; 3; 4; 4 ]
-   @@ N.sample_sequence (N.ngrams 4 example_l) ~max_length:5
-        ~initial_ngram:[ 1; 2; 3 ];
-   assert_equal []
-   @@ N.sample_sequence (N.ngrams 1 []) ~max_length:5 ~initial_ngram:[];
-   assert_equal [ 1 ]
-   @@ N.sample_sequence (N.ngrams 1 [ 1; 2; 3 ]) ~max_length:5 ~initial_ngram:[];
-   assert_equal [ 2 ]
-   @@ N.sample_sequence (N.ngrams 1 [ 2; 3 ]) ~max_length:5 ~initial_ngram:[] *)
-
 let ngram_test = "N Gram" >: test_list [ "ngrams" >:: test_ngrams ]
 
 let test_desome _ = assert_equal 1 @@ desome (Some 1)
