@@ -45,13 +45,17 @@ module N_grams (Token : Map.Key) = struct
   Map.Make (struct
     type t = Token.t list [@@deriving compare, sexp]
   end)
+
   type distribution = Token.t Bag.t Token_list_map.t [@@deriving sexp]
+
   module Token_list = List_key (Token)
 
-  let make_kv (n : int) (player:int) (l : Token.t list) : (Token.t * Token.t list) list =
+  let make_kv (n : int) (player : int) (l : Token.t list) :
+      (Token.t * Token.t list) list =
     wining_sequence n player l |> List.map ~f:(fun x -> split_last x)
 
-  let make_keys (n : int) (player:int) (l : Token.t list) : Token.t list list =
+  let make_keys (n : int) (player : int) (l : Token.t list) : Token.t list list
+      =
     make_kv n player l |> List.map ~f:(fun (_, k) -> k)
 
   let map_add (map : Token.t Bag.t Token_list_map.t)
@@ -79,8 +83,10 @@ module N_grams (Token : Map.Key) = struct
         map_add acc k bag)
       ~init:map
 
-  let ngrams (n : int) (player:int) (l : Token.t list) : distribution =
-    make_distribution (make_keys n player l) (make_kv n player l) Token_list_map.empty
+  let ngrams (n : int) (player : int) (l : Token.t list) : distribution =
+    make_distribution (make_keys n player l) (make_kv n player l)
+      Token_list_map.empty
+
   let desome (x : Token.t option) : Token.t =
     match x with Some x -> x | _ -> invalid_arg "none case"
 end
@@ -173,18 +179,40 @@ let is_valid_move (move : int * int) (history : (int * int) list) : bool =
          then acc && false
          else acc && true)
 
-let rec get_n_items (n:int) (original:(int*int) list) (return_list:(int*int) list) : (int*int)list = 
-  match n with 
+let rec get_n_items (n : int) (original : (int * int) list)
+    (return_list : (int * int) list) : (int * int) list =
+  match n with
   | 0 -> return_list
-  | _ -> get_n_items (n-1) (original) (List.nth_exn original (n-1) :: return_list)
+  | _ ->
+      get_n_items (n - 1) original (List.nth_exn original (n - 1) :: return_list)
 
 (* n here is n-1 in n_grams *)
-let get_last_n_moves (n:int) (history : (int * int) list) : (int * int) list =
+let get_last_n_moves (n : int) (history : (int * int) list) : (int * int) list =
   if n < 3 then invalid_arg "n is designed to be greater than 3"
   else if n > 6 then invalid_arg "n is designed to be less than 7"
-  else if (List.length history) < 3 then [] 
-  else if (List.length history) < n then history
+  else if List.length history < 3 then []
+  else if List.length history < n then history
   else get_n_items n history []
+
+(* let bag_to_list (b : 'a Bag.t) =
+   Bag.fold b ~init:[] ~f:(fun acc a -> a :: acc) *)
+
+(* Array.make_matrix ~dimx:6 ~dimy:7 0;; *)
+let history_to_board history board =
+  List.foldi history ~init:board ~f:(fun i acc (j, k) ->
+      List.mapi acc ~f:(fun i1 x ->
+          if i1 = j then
+            List.mapi x ~f:(fun i2 y -> if i2 = k then (i % 2) + 1 else y)
+          else x))
+
+let merge_distribution new_d og_d =
+  Map.fold new_d ~init:og_d ~f:(fun ~key:k ~data:v acc ->
+      Map.update acc k ~f:(fun data ->
+          match data with
+          | None -> v
+          | Some x ->
+              Bag.transfer ~src:v ~dst:x;
+              x))
 
 (* execution *)
 

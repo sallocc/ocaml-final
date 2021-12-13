@@ -55,7 +55,7 @@ let test_ngrams _ =
   assert_equal [ [ 1; 3; 5; 7; 9 ] ] @@ fold_sample_test 1 1 example_l;
   assert_equal [ [ 2; 4; 6; 8 ] ] @@ fold_sample_test 1 2 example_l;
   assert_equal [ [ 3 ]; [ 5 ]; [ 7 ]; [ 9 ] ] @@ fold_sample_test 2 1 example_l;
-  assert_equal [ [ 4 ]; [ 6 ]; [ 8 ] ] @@ fold_sample_test 2 2 example_l;
+  assert_equal [ [ 2 ]; [ 4 ]; [ 6 ]; [ 8 ] ] @@ fold_sample_test 2 2 example_l;
   assert_equal [ [ 3 ]; [ 5 ]; [ 7 ]; [ 9 ] ] @@ fold_sample_test 3 1 example_l;
   assert_equal [ [ 4 ]; [ 6 ]; [ 8 ] ] @@ fold_sample_test 3 2 example_l;
   assert_equal [] @@ fold_sample_test 11 1 example_l;
@@ -113,10 +113,7 @@ let test_ngrams _ =
    assert_equal [ 2 ]
    @@ N.sample_sequence (N.ngrams 1 [ 2; 3 ]) ~max_length:5 ~initial_ngram:[] *)
 
-(* let exercise5_test =
-   "Exercise 5"
-   >: test_list
-        [ "ngrams" >:: test_ngrams; "sample_sequence" >:: test_sample_sequence ] *)
+let ngram_test = "N Gram" >: test_list [ "ngrams" >:: test_ngrams ]
 
 let test_desome _ = assert_equal 1 @@ N.desome (Some 1)
 
@@ -214,7 +211,6 @@ let p2_test =
          "rand_num" >:: test_rand_num;
        ]
 
-
 let test_wining_sequence _ =
   assert_equal [ [ 1; 2; 3 ]; [ 3; 4; 5 ]; [ 5; 6; 7 ] ]
   @@ wining_sequence 3 1 [ 1; 2; 3; 4; 5; 6; 7; 8 ];
@@ -247,23 +243,53 @@ let test_is_valid_move _ =
 
 let test_get_last_n_moves _ =
   assert_equal [] @@ get_last_n_moves 5 [];
-  assert_equal [] @@ get_last_n_moves 5 [(0,0)];
-  assert_equal [] @@ get_last_n_moves 5 [(0,0);(1,1)];
-  assert_equal [(0,0);(1,1);(2,2)] @@ get_last_n_moves 5 [(0,0);(1,1);(2,2)];
-  assert_equal [(0,0);(1,1);(2,2);(3,3)] @@ get_last_n_moves 5 [(0,0);(1,1);(2,2);(3,3)];
-  assert_equal [(0,0);(1,1);(2,2);(3,3)] @@ get_last_n_moves 4 [(0,0);(1,1);(2,2);(3,3)];
-  assert_equal [(0,0);(1,1);(2,2);(3,3);(4,4)] @@ get_last_n_moves 5 [(0,0);(1,1);(2,2);(3,3);(4,4)]
+  assert_equal [] @@ get_last_n_moves 5 [ (0, 0) ];
+  assert_equal [] @@ get_last_n_moves 5 [ (0, 0); (1, 1) ];
+  assert_equal [ (0, 0); (1, 1); (2, 2) ]
+  @@ get_last_n_moves 5 [ (0, 0); (1, 1); (2, 2) ];
+  assert_equal [ (0, 0); (1, 1); (2, 2); (3, 3) ]
+  @@ get_last_n_moves 5 [ (0, 0); (1, 1); (2, 2); (3, 3) ];
+  assert_equal [ (0, 0); (1, 1); (2, 2); (3, 3) ]
+  @@ get_last_n_moves 4 [ (0, 0); (1, 1); (2, 2); (3, 3) ];
+  assert_equal [ (0, 0); (1, 1); (2, 2); (3, 3); (4, 4) ]
+  @@ get_last_n_moves 5 [ (0, 0); (1, 1); (2, 2); (3, 3); (4, 4) ]
+
+let test_history_to_board _ =
+  assert_equal
+    [
+      [ 0; 0; 0; 1; 0; 0; 0 ];
+      [ 0; 0; 0; 2; 0; 0; 0 ];
+      [ 0; 0; 0; 0; 0; 0; 0 ];
+      [ 0; 0; 0; 0; 0; 0; 0 ];
+      [ 0; 0; 0; 0; 0; 0; 0 ];
+      [ 1; 0; 0; 0; 0; 0; 0 ];
+    ]
+  @@ history_to_board [ (0, 3); (1, 3); (0, 0) ] empty;
+  assert_equal
+    [
+      [ 1; 1; 1; 1; 0; 0; 0 ];
+      [ 0; 0; 0; 2; 0; 0; 0 ];
+      [ 0; 0; 0; 2; 0; 0; 0 ];
+      [ 0; 0; 0; 2; 0; 0; 0 ];
+      [ 0; 0; 0; 0; 0; 0; 0 ];
+      [ 0; 0; 0; 0; 0; 0; 0 ];
+    ]
+  @@ history_to_board
+       [ (0, 3); (1, 3); (0, 0); (2, 3); (0, 1); (3, 3); (0, 2) ]
+       empty
 
 let new_lib_test =
   "new lib test"
   >: test_list
        [
-         "Winning Sequence" >:: test_wining_sequence;
-         "Pair" >:: test_pair;
-         "Random Move" >:: test_random_distribution;
-         "Player2 Frist Move" >:: test_player2_frist_move;
-         "Test Is Valid Move" >:: test_is_valid_move;
-         "Test Get Last N Moves" >:: test_get_last_n_moves;
+        (* "Merge Distribution" >:: test_merge_distribution; *)
+       "History to Board" >:: test_history_to_board;
+       "Winning Sequence" >:: test_wining_sequence;
+       "Pair" >:: test_pair;
+       "Random Move" >:: test_random_distribution;
+       "Player2 Frist Move" >:: test_player2_frist_move;
+       "Test Is Valid Move" >:: test_is_valid_move;
+       "Test Get Last N Moves" >:: test_get_last_n_moves;
        ]
 
 let gameOverBoard1 =
@@ -471,6 +497,7 @@ let series =
   "Assignment4 P1 & P2 Tests"
   >::: [
          exercise1_2_test;
+         ngram_test;
          my_test;
          p2_test;
          new_lib_test;
