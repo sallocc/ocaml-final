@@ -93,11 +93,8 @@ let test_pair _ =
   assert_equal 1 @@ pair (1, 2) 1;
   assert_equal 2 @@ pair (1, 2) 2
 
-(* commented out because random_distribution is gone
-(*  for coverage purpose*)
-let test_random_distribution _ = assert_equal 0 @@ (random_distribution 1 * 0)
-*)
 
+(*  for coverage purpose*)
 let test_player2_first_move _ =
   assert_equal (0, 3) @@ player2_first_move (0, 0);
   assert_equal (0, 2) @@ player2_first_move (0, 1);
@@ -226,7 +223,6 @@ let new_lib_test =
          "History to Board" >:: test_history_to_board;
          "Winning Sequence" >:: test_wining_sequence;
          "Pair" >:: test_pair;
-         (*"Random Move" >:: test_random_distribution;*)
          "Player2 First Move" >:: test_player2_first_move;
          "Test Is Valid Move" >:: test_ai_is_valid_move;
          "Test Get Last N Moves" >:: test_get_last_n_moves;
@@ -492,4 +488,4 @@ let series =
          board_test;
        ]
 
-let () = run_test_tt_main series 
+let () = run_test_tt_main series

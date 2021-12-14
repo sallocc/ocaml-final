@@ -1,19 +1,16 @@
-
-
 (library
   (name board)
   (modules board)
   (libraries 
     core)
-  (preprocess (pps ppx_jane)))
-; bisect_ppx
+  (preprocess (pps ppx_jane bisect_ppx)))
+
 (library
   (name lib)
   (modules lib)
   (libraries 
     core)
-  (preprocess (pps ppx_jane)))
-; bisect_ppx
+  (preprocess (pps ppx_jane bisect_ppx)))
 
 (executable
   (name main)
@@ -29,7 +26,6 @@
  (targets main.ml)
  (deps main.eml.ml)
  (action (run dream_eml %{deps} --workspace %{workspace_root})))
-
 
 (executable
   (name training)

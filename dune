@@ -6,6 +6,7 @@
     src/dune
     src/main.eml.ml
     src/training.ml
+    src/dune
     tests/tests.ml
     tests/dune
   )
