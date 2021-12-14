@@ -21,6 +21,7 @@
   (libraries
     core
     board
+    lib
     dream)
   (preprocess (pps lwt_ppx ppx_jane)))
 
