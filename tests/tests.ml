@@ -1,4 +1,4 @@
-open Core
+(* open Core
 open OUnit2
 open Lib
 open Board
@@ -61,6 +61,7 @@ let test_ngrams _ =
   assert_equal [] @@ fold_sample_test 1 2 [];
   assert_equal [ [ 1 ] ] @@ fold_sample_test 1 1 [ 1 ];
   assert_equal [] @@ fold_sample_test 1 2 [ 1 ]
+
 let ngram_test = "N Gram" >: test_list [ "ngrams" >:: test_ngrams ]
 
 let test_desome _ = assert_equal 1 @@ desome (Some 1)
@@ -141,9 +142,7 @@ let test_history_to_board _ =
       [ 0; 0; 0; 0; 0; 0; 0 ];
       [ 0; 0; 0; 0; 0; 0; 0 ];
     ]
-  @@ history_to_board
-       [ (0, 3); (1, 3); (0, 0); (2, 3); (0, 1); (3, 3); (0, 2) ]
-      
+  @@ history_to_board [ (0, 3); (1, 3); (0, 0); (2, 3); (0, 1); (3, 3); (0, 2) ]
 
 let almost_full_h =
   [
@@ -434,14 +433,20 @@ let board_test =
          "Set player" >:: set_player;
        ]
 
+let test_sample _ = assert_equal None @@ sample Bag.create ()
+
+let exercise3_4_test =
+  "Exercise 3 and 4" >: test_list [ "sample" >:: test_sample ]
+
 let series =
   "Assignment4 P1 & P2 Tests"
   >::: [
          exercise1_2_test;
+         exercise3_4_test;
          ngram_test;
          my_test;
          new_lib_test;
          board_test;
        ]
 
-let () = run_test_tt_main series
+let () = run_test_tt_main series *)
