@@ -40,7 +40,7 @@ let changeRow (xPos : int) (newVal : int) (row : int list) : int list =
   | [] -> failwith "Invalid position"
   | _ :: tl -> List.append firstPositions (newVal :: tl)
 
-let rec changePos (currY : int) (currX : int) (yPos : int) (xPos : int)
+let rec changePos (currX : int) (currY : int) (xPos : int) (yPos : int)
     (newVal : int) (board : gameboard) : gameboard =
   if xPos < 0 || xPos > 6 || yPos < 0 || yPos > 5 then
     failwith "Invalid position"
@@ -65,7 +65,7 @@ let makeMove (board : gameboard) (col : int) : gameboard option =
   if getPos col 5 board <> 0 then None
   else
     let x, y = getAvailableSpace board col 0 in
-    gameHistory := (x, y) :: !gameHistory;
+    gameHistory := (y, x) :: !gameHistory;
     Some (changePos 0 0 x y !currPlayer board)
 
 let checkWin (board : gameboard) : bool * int =
