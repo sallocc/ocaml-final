@@ -184,7 +184,7 @@ let around_last_move (history : ('a * int) list) : int =
   | _, 4 -> distribution_maker 1 6 10 24 27 22 10
   | _, 3 -> standard_distribution 0
   | _, 2 -> distribution_maker 10 22 27 24 10 6 1
-  | _, 1 -> distribution_maker 13 29 30 24 10 3 1
+  | _, 1 -> distribution_maker 13 19 30 24 10 3 1
   | _, 0 -> distribution_maker 10 26 26 24 10 3 1
   | _, _ -> invalid_arg "invalid history"
 
