@@ -107,7 +107,7 @@ let () =
           else setPlayer 1;
           (match gameOver with
           | false -> winner := winner.contents;
-              let _, x = ai_move (List.rev gameHistory.contents) 6 ai_dist standard_distribution 20 in
+              let _, x = ai_move (List.rev gameHistory.contents) 12 ai_dist standard_distribution 20 in
               (match makeMove tempBoard.contents x with
               | None -> ()
               | Some ainewBoard -> tempBoard := ainewBoard;

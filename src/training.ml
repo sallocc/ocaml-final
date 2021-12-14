@@ -75,11 +75,6 @@ let random_d = all_4
 
 let repeat = 15
 
-let write_string_to_file filename text =
-  let outc = Out_channel.create ~append:false filename in
-  Out_channel.output_string outc text;
-  Out_channel.close outc
-
 let vs_random store_file gram=
   let rec play new_dist history i =
     switch_player history;

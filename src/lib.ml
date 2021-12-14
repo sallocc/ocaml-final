@@ -125,9 +125,6 @@ let distribution_maker (p0 : int) (p1 : int) (p2 : int) (p3 : int) (p4 : int)
 
 let standard_distribution _ : int = distribution_maker 2 14 20 27 20 15 2
 
-let every_other_chunks (n : int) (odd_even : int) (l : 'a list) : 'a list list =
-  chunks n l |> List.filteri ~f:(fun i _ -> i % 2 = odd_even)
-
 let pair (a : 'a * 'a) (n : int) : 'a =
   match (a, n) with
   | (x, _), 1 -> x
