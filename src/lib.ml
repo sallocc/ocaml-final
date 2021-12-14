@@ -204,7 +204,7 @@ let ai_dist_move (dist : int -> int) (history : (int * int) list) : int * int =
 
 let desome (x : 'a option) : 'a = match x with Some x -> x | _ -> invalid_arg "none case"
 
-let ai_move history last_n dist_map dist num_repeat =
+let ai_move (history : (int * int) list) (last_n : int) (dist_map : ((int * int) list, (int * int) Bag.t, 'a) Map_intf.Map.t) (dist : int -> int) (num_repeat : int) : int * int =
   (* pre programed moves *)
   match List.length history with
   | 0 -> (0, 3)
