@@ -93,6 +93,7 @@ let test_pair _ =
   assert_equal 1 @@ pair (1, 2) 1;
   assert_equal 2 @@ pair (1, 2) 2
 
+
 (*  for coverage purpose*)
 let test_player2_first_move _ =
   assert_equal (0, 3) @@ player2_first_move (0, 0);
@@ -444,14 +445,53 @@ let changeBoard1'' =
   ]
 
 let change_position _ =
-  assert_equal changeBoard1' @@ changePos 0 0 3 3 1 changeBoard1;
-  assert_equal changeBoard1'' @@ changePos 0 0 6 5 0 changeBoard1'
+  assert_equal changeBoard1' @@ changePos 0 0 (3, 3) 1 changeBoard1;
+  assert_equal changeBoard1'' @@ changePos 0 0 (6, 5) 0 changeBoard1';
+;;
 
 let set_player _ =
   setPlayer 1;
   assert_equal !currPlayer @@ 1;
   setPlayer 2;
-  assert_equal !currPlayer @@ 2
+  assert_equal !currPlayer @@ 2;
+;;
+
+let test_invalid_position _ =
+  let invalid_get _ = getPos (-1, -1) moveBoard1 in
+  assert_raises (Failure "Invalid position") @@ invalid_get;
+  let invalid_get' _ = getPos (-1, 8) moveBoard1 in
+  assert_raises (Failure "Invalid position") @@ invalid_get';
+  let invalid_get'' _ = getPos (10, -1) moveBoard1 in
+  assert_raises (Failure "Invalid position") @@ invalid_get'';
+  let invalid_row _ = changeRow 8 2 [1; 0; 0; 1; 2; 1; 1] in
+  assert_raises (Failure "Invalid position") @@ invalid_row;
+  let invalid_row' _ = changeRow 20 2 [1; 0; 0; 1; 2; 1; 1] in
+  assert_raises (Failure "Invalid position") @@ invalid_row';
+  let invalid_position _ = changePos 0 0 (6, 7) 0 moveBoard1 in
+  assert_raises (Failure "Invalid position") @@ invalid_position;
+  let invalid_position' _ = changePos 0 0 (-2, 7) 0 moveBoard1 in
+  assert_raises (Failure "Invalid position") @@ invalid_position';
+  let invalid_position'' _ = changePos 0 0 (0, -3) 0 moveBoard1 in
+  assert_raises (Failure "Invalid position") @@ invalid_position'';
+;;
+
+let invalidBoard1 = [[1; 0; 2];
+                    [0; 0; 1];
+                    [1; 1; 1]]
+
+let invalidBoard2 = [[1]]
+
+let invalidBoard3 = [[]]
+
+let test_invalid_board _ = 
+  let invalid_board _ = changePos 0 0 (4, 4) 2 invalidBoard1 in
+  assert_raises (Failure "Invalid board") @@ invalid_board; 
+  let invalid_board' _ = changePos 0 0 (4, 4) 2 invalidBoard2 in
+  assert_raises (Failure "Invalid board") @@ invalid_board';
+  let invalid_board'' _ = changePos 0 0 (4, 4) 2 invalidBoard3 in
+  assert_raises (Failure "Invalid board") @@ invalid_board'';
+;;
+
 
 let board_test =
   "Board tests"
@@ -463,6 +503,8 @@ let board_test =
          "Make move valid" >:: make_move_valid;
          "Change position" >:: change_position;
          "Set player" >:: set_player;
+         "Invalid position" >:: test_invalid_position;
+         "Invalid board" >:: test_invalid_board;
        ]
 
 let test_sample _ = assert_equal None @@ sample (Bag.create ())
