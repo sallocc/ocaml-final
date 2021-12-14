@@ -3,6 +3,7 @@
   (deps 
     src/board.ml
     src/lib.ml
+    src/dune
     src/main.eml.ml
     src/training.ml
     src/dune
