@@ -1,4 +1,4 @@
-open Core
+(* open Core
 open Board
 open Lib
 
@@ -17,7 +17,8 @@ module Write_Distribution = Dist
 let sexp_to_map filename =
   Write_Distribution.t_of_sexp (Sexp.load_sexp filename)
 
-let ai_dist = Pos_grams.ngrams 1 1 [](* sexp_to_map "player1.txt" *)
+let ai_dist = Pos_grams.ngrams 1 1 []
+(* let ai_dist = sexp_to_map "player1.txt" *)
 
 let ai_first = 1
 
@@ -123,4 +124,4 @@ let () =
           Dream.empty `Bad_Request);
 
   ]
-  @@ Dream.not_found
+  @@ Dream.not_found *)

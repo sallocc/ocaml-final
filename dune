@@ -3,9 +3,9 @@
   (deps 
     src/board.ml
     src/lib.ml
-    src/dune
-    src/main.ml
+    src/main.eml.ml
     src/training.ml
+    src/dune
     tests/tests.ml
     tests/dune
   )
