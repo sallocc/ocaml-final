@@ -38,10 +38,5 @@
     lib
     core)
   (preprocess (pps ppx_jane )))
-<<<<<<< HEAD
-; bisect_ppx
-    ; dream))
-=======
->>>>>>> 1a358365fa27c5c12b5036c4f5d2c3fbe11f0364
 
  (data_only_dirs _esy esy.lock lib node_modules)    
