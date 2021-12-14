@@ -212,16 +212,51 @@ let test_ai_move _ =
   assert_equal (0, 4)
   @@ ai_move [ (0, 1); (0, 2); (0, 3) ] 3 bcd standard_distribution 10
 
+let test_player1_second_move _ = 
+  assert_equal (1,3) @@ player1_second_move (0,0);
+  assert_equal (1,1) @@ player1_second_move (0,1);
+  assert_equal (1,2) @@ player1_second_move (0,2);
+  assert_equal (2,3) @@ player1_second_move (1,3);
+  assert_equal (1,4) @@ player1_second_move (0,4);
+  assert_equal (1,5) @@ player1_second_move (0,5);
+  assert_equal (1,3) @@ player1_second_move (0,6)
+
+let test_new_invalid _ =
+  let invalid _ = player2_first_move (-1,-1) in
+  assert_raises (Invalid_argument "invalid input") invalid;
+  let invalid' _ = player1_second_move (-1,-1) in
+  assert_raises (Invalid_argument "invalid input") invalid';
+  let invalid'' _ = distribution_maker 0 0 0 0 0 0 0 in
+  assert_raises (Invalid_argument "invalid distribution") invalid'';
+  let invalid''' _ = pair (1,1) 3 in
+  assert_raises (Invalid_argument "wrong n") invalid''';
+  let invalid'''' _ = get_last_n_moves 1 [] in
+  assert_raises (Invalid_argument "n is designed to be greater than 2") invalid'''';
+  let invalid''''' _ = get_last_n_moves 21 [] in
+  assert_raises (Invalid_argument "n is designed to be less than 20") invalid''''';
+  let invalid'''''' _ =   ai_dist_move standard_distribution (almost_full_h @ [(5,6)]) in
+  assert_raises (Invalid_argument "invalid history") invalid'''''';
+  let invalid1 _ = around_last_move [(-1,-1)] in
+  assert_raises (Invalid_argument "invalid history") invalid1
+  
+  (* let invalid''''''' _ = pair _ 3 in
+  assert_raises (Invalid_argument "wrong n") invalid''''''' *)
+
+  
+  
 let new_lib_test =
   "new lib test"
   >: test_list
        [
+
          (* "Merge Distribution" >:: test_merge_distribution; *)
+         " ALL invalid cases" >:: test_new_invalid;
          "AI Move" >:: test_ai_move;
          "AI Dist Move" >:: test_ai_dist_move;
          "History to Board" >:: test_history_to_board;
          "Winning Sequence" >:: test_wining_sequence;
          "Pair" >:: test_pair;
+         "Player1 Second Move" >:: test_player1_second_move;
          "Player2 First Move" >:: test_player2_first_move;
          "Test Is Valid Move" >:: test_ai_is_valid_move;
          "Test Get Last N Moves" >:: test_get_last_n_moves;

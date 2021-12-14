@@ -92,12 +92,12 @@ let player1_second_move (pos : int * int) : int * int =
   match pos with
   | 0, 0 -> (1, 3)
   | 0, 1 -> (1, 1)
-  | 0, 2 -> (0, 5)
+  | 0, 2 -> (1, 2)
   | 1, 3 -> (2, 3)
-  | 0, 4 -> (0, 1)
+  | 0, 4 -> (1, 4)
   | 0, 5 -> (1, 5)
   | 0, 6 -> (1, 3)
-  | _ -> invalid_arg "invaid input"
+  | _ -> invalid_arg "invalid input"
 
 let player2_first_move (pos : int * int) : int * int =
   match pos with
@@ -108,7 +108,7 @@ let player2_first_move (pos : int * int) : int * int =
   | 0, 4 -> (0, 3)
   | 0, 5 -> (0, 4)
   | 0, 6 -> (0, 3)
-  | _ -> invalid_arg "invaid input"
+  | _ -> invalid_arg "invalid input"
 
 let distribution_maker (p0 : int) (p1 : int) (p2 : int) (p3 : int) (p4 : int)
     (p5 : int) (p6 : int) : int =
@@ -157,14 +157,11 @@ let rec get_n_items (n : int) (original : (int * int) list)
 
 (* n here is n-1 in n_grams *)
 let get_last_n_moves (n : int) (history : (int * int) list) : (int * int) list =
-  if n < 3 then invalid_arg "n is designed to be greater than 3"
-  else if n > 6 then invalid_arg "n is designed to be less than 7"
+  if n < 2 then invalid_arg "n is designed to be greater than 2"
+  else if n > 20 then invalid_arg "n is designed to be less than 20"
   else if List.length history < 3 then []
   else if List.length history < n then history
   else get_n_items n history []
-
-(* let bag_to_list (b : 'a Bag.t) =
-   Bag.fold b ~init:[] ~f:(fun acc a -> a :: acc) *)
 
 let merge_distribution (new_d : ('a, 'b Bag.t, 'c) Map_intf.Map.t)
     (og_d : ('a, 'b Bag.t, 'c) Map_intf.Map.t) :
@@ -194,17 +191,21 @@ let ai_dist_move (dist : int -> int) (history : (int * int) list) : int * int =
     let m =
       if List.length history = 0 then dist 0 else around_last_move history
     in
-    let rec until_valid level move =
+    let rec until_valid level move repeat =
       if level < 6 then
-        if ai_is_valid_move (level, move) history then (level, move)
-        else until_valid (level + 1) move
-      else until_valid 0 (dist 1)
+        if level = 4 && repeat <> 1 then until_valid 0 (dist repeat) (repeat + 1)
+        else if ai_is_valid_move (level, move) history then (level, move)
+        else until_valid (level + 1) move repeat
+      else until_valid 0 (dist 1) repeat
     in
-    until_valid 0 m
+    until_valid 0 m 0
 
-let desome (x : 'a option) : 'a = match x with Some x -> x | _ -> invalid_arg "none case"
+let desome (x : 'a option) : 'a =
+  match x with Some x -> x | _ -> invalid_arg "none case"
 
-let ai_move (history : (int * int) list) (last_n : int) (dist_map : ((int * int) list, (int * int) Bag.t, 'a) Map_intf.Map.t) (dist : int -> int) (num_repeat : int) : int * int =
+let ai_move (history : (int * int) list) (last_n : int)
+    (dist_map : ((int * int) list, (int * int) Bag.t, 'a) Map_intf.Map.t)
+    (dist : int -> int) (num_repeat : int) : int * int =
   (* pre programed moves *)
   match List.length history with
   | 0 -> (0, 3)
@@ -222,13 +223,3 @@ let ai_move (history : (int * int) list) (last_n : int) (dist_map : ((int * int)
         else ai_dist_move dist history
       in
       re_move 0
-
-(*
-        0 1 2 3 4 5 6
-    5   0 0 0 0 0 0 0
-    4   0 0 0 0 0 0 0
-    3   0 0 0 0 0 0 0
-    2   0 0 0 0 0 0 0
-    1   0 0 0 0 0 0 0
-    0   0 0 0 0 0 0 0
-*)

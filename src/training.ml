@@ -31,30 +31,62 @@ let switch_player history =
   | 1 -> setPlayer 1
   | _ -> ()
 
+let ai_trainning_move (dist : int -> int) (history : (int * int) list) :
+    int * int =
+  if List.length history >= 42 then invalid_arg "invalid history"
+  else
+    let m = dist 0 in
+    let rec until_valid level move repeat =
+      if level < 6 then
+        if level = 4 && repeat <> 20 then until_valid 0 (dist repeat) (repeat + 1)
+        else if ai_is_valid_move (level, move) history then (level, move)
+        else until_valid (level + 1) move repeat
+      else until_valid 0 (dist 1) repeat
+    in
+    until_valid 0 m 0
+
+let all_0 _ : int = distribution_maker 94 1 1 1 1 1 1
+
+let all_1 _ : int = distribution_maker 1 94 1 1 1 1 1
+
+let all_2 _ : int = distribution_maker 1 1 94 1 1 1 1
+
+let all_3 _ : int = distribution_maker 1 1 1 94 1 1 1
+
+let all_4 _ : int = distribution_maker 1 1 1 1 94 1 1
+
+let all_5 _ : int = distribution_maker 1 1 1 1 1 94 1
+
+let all_6 _ : int = distribution_maker 1 1 1 1 1 1 94
+let tail _ : int = distribution_maker 48 1 1 1 1 1 47
+let left _ : int = distribution_maker 30 36 30 1 1 1 1
+let right _ : int = distribution_maker 1 1 1 1 30 36 30 
+let ll _ : int = distribution_maker 1 30 36 30 1 1 1
+let rr _ : int = distribution_maker 1 1 1 30 36 30 1
+let middle _ : int = distribution_maker 1 1 30 36 30 1 1
+let lll _ : int = distribution_maker 47 48 1 1 1 1 1
+let rrr _ : int = distribution_maker 1 1 1 1 1 48 47
+
 let empty_d = Pos_grams.ngrams 1 1 []
 
-let gram = 3
+let num_games = 500
 
-let num_games = 10000
+let random_d = all_4
 
-let random_d = standard_distribution
-
-let repeat = 10
+let repeat = 15
 
 let write_string_to_file filename text =
   let outc = Out_channel.create ~append:false filename in
   Out_channel.output_string outc text;
   Out_channel.close outc
 
-let vs_random store_file =
+let vs_random store_file gram=
   let rec play new_dist history i =
     switch_player history;
     if i < num_games then
       match is_game_over (history_to_board history) history with
       | true, -1 -> play new_dist [] i
       | true, p ->
-          write_string_to_file "hist.txt"
-            (List.sexp_of_t Pos.sexp_of_t history |> Sexp.to_string);
           play
             (merge_distribution (Pos_grams.ngrams gram p history) new_dist)
             [] (i + 1)
@@ -64,15 +96,13 @@ let vs_random store_file =
   in
   play (sexp_to_map store_file) [] 0
 
-let vs_itself store_file =
+let vs_itself store_file gram =
   let rec play new_dist history i =
     switch_player history;
     if i < num_games then
       match is_game_over (history_to_board history) history with
       | true, -1 -> play new_dist [] i
       | true, p ->
-          write_string_to_file "hist.txt"
-            (List.sexp_of_t Pos.sexp_of_t history |> Sexp.to_string);
           play
             (merge_distribution (Pos_grams.ngrams gram p history) new_dist)
             [] (i + 1)
@@ -84,15 +114,13 @@ let vs_itself store_file =
   in
   play (sexp_to_map store_file) [] 0
 
-let train_player1 player1 =
+let train_player1 player1 gram =
   let rec play new_dist history i =
     switch_player history;
     if i < num_games then
       match is_game_over (history_to_board history) history with
       | true, -1 -> play new_dist [] i
       | true, p ->
-        write_string_to_file "hist.txt"
-        (List.sexp_of_t Pos.sexp_of_t history |> Sexp.to_string);
           play
             (merge_distribution (Pos_grams.ngrams gram p history) new_dist)
             [] (i + 1)
@@ -101,65 +129,17 @@ let train_player1 player1 =
             play new_dist
               (history @ [ ai_move history gram new_dist random_d repeat ])
               i
-          else play new_dist (history @ [ ai_dist_move random_d history ]) i
+          else
+            play new_dist (history @ [ ai_trainning_move random_d history ]) i
     else write_sexp_to_file player1 new_dist
   in
   play (sexp_to_map "player1.txt") [] 0
 
+let rec n_times n = 
+  (train_player1 "player1.txt" n);
+  if n > 3 then n_times (n-1)  else ()
+
 let () =
-  (* write_sexp_to_file ("dist.txt") (Pos_grams.ngrams 1 1 []); *)
-  correct_directory "set to the right directory";
-  vs_itself "player1.txt" 
-
-
-(* let train_player2 player2 =
-  let rec play new_dist history i =
-    switch_player history;
-    if i < num_games then
-      match is_game_over (history_to_board history) history with
-      | true, -1 -> play new_dist [] i
-      | true, p ->
-          write_string_to_file "hist.txt"
-            (List.sexp_of_t Pos.sexp_of_t history |> Sexp.to_string);
-          play
-            (merge_distribution (Pos_grams.ngrams gram p history) new_dist)
-            [] (i + 1)
-      | false, _ ->
-          if List.length history % 2 = 1 then
-            play new_dist
-              (history @ [ ai_move history gram new_dist random_d repeat ])
-              i
-          else play new_dist (history @ [ ai_dist_move random_d history ]) i
-    else write_sexp_to_file player2 new_dist
-  in
-  play (sexp_to_map "player2.txt") [] 0
-
-let train_both player1 player2 =
-  let rec play p1 p2 history i =
-    switch_player history;
-    if i < num_games then
-      match is_game_over (history_to_board history) history with
-      | true, -1 -> play p1 p2 [] i
-      | true, _ ->
-          write_string_to_file "hist.txt"
-            (List.sexp_of_t Pos.sexp_of_t history |> Sexp.to_string);
-          play
-            (merge_distribution (Pos_grams.ngrams gram 1 history) p1) p2
-            [] (i + 1)
-      (* | true, _ ->
-          play p1
-            (merge_distribution (Pos_grams.ngrams gram 2 history) p2)
-            [] (i + 1) *)
-      | false, _ ->
-          if List.length history % 2 = 1 then
-            play p1 p2
-              (history @ [ ai_move history gram p2 random_d repeat ])
-              i
-          else
-            play p1 p2
-              (history @ [ ai_move history gram p1 random_d repeat ])
-              i
-    else write_sexp_to_file player2 p2;
-    write_sexp_to_file player1 p1
-  in
-  play (sexp_to_map "player1.txt") (sexp_to_map "player2.txt") [] 0 *)
+  n_times 11
+  (* correct_directory "set to the right directory"; *)
+  
