@@ -1,4 +1,4 @@
-(* open Core
+open Core
 open OUnit2
 open Lib
 open Board
@@ -449,4 +449,4 @@ let series =
          board_test;
        ]
 
-let () = run_test_tt_main series *)
+let () = run_test_tt_main series 
