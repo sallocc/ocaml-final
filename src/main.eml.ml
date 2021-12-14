@@ -2,6 +2,25 @@ open Core
 open Board
 open Lib
 
+(*
+module Pos = struct
+  type t = int * int [@@deriving compare, sexp]
+end
+
+module Pos_grams = N_grams (Pos)
+
+module Dist = struct
+  type t = Pos_grams.distribution [@@deriving sexp]
+end
+
+module Write_Distribution = Dist
+
+let sexp_to_map filename =
+  Write_Distribution.t_of_sexp (Sexp.load_sexp filename)
+
+let ai_dist = sexp_to_map "player1.txt"
+*)
+
 let tempBoard = ref [[]]
 
 let winner = ref 0
@@ -53,6 +72,8 @@ let show_form ?message request =
 %   | _ ->
       <p>Player <%i winner.contents %> is the <b>winner</b>!!!</p>
 %   end;
+%   let game_history_length = List.length gameHistory in
+    <p> <%i game_history_length %> moves so far!</p>
     </body> 
     </html>
 
@@ -66,6 +87,7 @@ let () =
       (fun request ->
         tempBoard := emptyBoard;
         setPlayer 1;
+        gameHistory := [];
         Dream.html (show_form ~message:(List.rev tempBoard.contents) request));
 
     Dream.post "/"
@@ -77,9 +99,19 @@ let () =
           (match makeMove tempBoard.contents moveCol with
           | None -> ()
           | Some newBoard -> tempBoard := newBoard; 
+          (*if currPlayer.contents = 1 then setPlayer 2
+          else setPlayer 1;*)
           let gameOver, gameWinner = is_game_over newBoard gameHistory.contents in
           (match gameOver with
           | false -> winner := winner.contents;
+              (*let y, x = ai_move gameHistory.contents 6 ai_dist standard_distribution 20 in
+              (match makeMove tempBoard.contents x with
+              | None -> ()
+              | Some newBoard -> tempBoard := newBoard;
+              let ai_game_over, ai_game_winner = is_game_over newBoard gameHistory.contents in
+              (match ai_game_over with
+              | false -> winner := winner.contents;
+              | true -> winner := ai_game_winner;););*)
           | true -> winner := gameWinner;);
           if currPlayer.contents = 1 then setPlayer 2
           else setPlayer 1;)
