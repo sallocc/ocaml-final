@@ -2,7 +2,6 @@ open Core
 open Board
 open Lib
 
-
 module Pos = struct
   type t = int * int [@@deriving compare, sexp]
 end
@@ -18,14 +17,15 @@ module Write_Distribution = Dist
 let sexp_to_map filename =
   Write_Distribution.t_of_sexp (Sexp.load_sexp filename)
 
-let ai_dist = sexp_to_map "player1.txt"
+let ai_dist = Pos_grams.ngrams 1 1 [](* sexp_to_map "player1.txt" *)
 
+let ai_first = 1
 
 let tempBoard = ref [[]]
 
 let winner = ref 0
 
-let emptyBoard = [[0; 0; 0; 0; 0; 0; 0];
+let emptyBoard = [[0; 0; 0; ai_first; 0; 0; 0];
                   [0; 0; 0; 0; 0; 0; 0];
                   [0; 0; 0; 0; 0; 0; 0];
                   [0; 0; 0; 0; 0; 0; 0];
@@ -87,7 +87,9 @@ let () =
       (fun request ->
         tempBoard := emptyBoard;
         setPlayer 1;
-        gameHistory := [];
+        if ai_first = 1 then gameHistory := [(0, 3)] else gameHistory := [];
+        winner := 0;
+        if ai_first = 1 then currPlayer := 2 else currPlayer := 1;
         Dream.html (show_form ~message:(List.rev tempBoard.contents) request));
 
     Dream.post "/"
@@ -99,16 +101,16 @@ let () =
           (match makeMove tempBoard.contents moveCol with
           | None -> ()
           | Some newBoard -> tempBoard := newBoard; 
+          let gameOver, gameWinner = is_game_over newBoard gameHistory.contents in
           if currPlayer.contents = 1 then setPlayer 2
           else setPlayer 1;
-          let gameOver, gameWinner = is_game_over newBoard gameHistory.contents in
           (match gameOver with
           | false -> winner := winner.contents;
-              let _, x = ai_move gameHistory.contents 6 ai_dist standard_distribution 20 in
+              let _, x = ai_move (List.rev gameHistory.contents) 6 ai_dist standard_distribution 20 in
               (match makeMove tempBoard.contents x with
               | None -> ()
-              | Some newBoard -> tempBoard := newBoard;
-              let ai_game_over, ai_game_winner = is_game_over newBoard gameHistory.contents in
+              | Some ainewBoard -> tempBoard := ainewBoard;
+              let ai_game_over, ai_game_winner = is_game_over ainewBoard gameHistory.contents in
               (match ai_game_over with
               | false -> winner := winner.contents;
               | true -> winner := ai_game_winner;););
