@@ -108,7 +108,10 @@ let test_ai_is_valid_move _ =
   assert_equal false @@ ai_is_valid_move (0, 0) [ (0, 0) ];
   assert_equal true @@ ai_is_valid_move (0, 2) [ (0, 0) ];
   assert_equal false @@ ai_is_valid_move (-1, 2) [ (0, 0) ];
-  assert_equal false @@ ai_is_valid_move (0, 7) [ (0, 0) ]
+  assert_equal false @@ ai_is_valid_move (0, 7) [ (0, 0) ];
+  assert_equal false @@ ai_is_valid_move (7, 7) [ (0, 0) ];
+  assert_equal false @@ ai_is_valid_move (1, -1) [ (0, 0) ]
+
 
 let test_get_last_n_moves _ =
   assert_equal [] @@ get_last_n_moves 5 [];
