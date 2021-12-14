@@ -23,12 +23,17 @@ type history = int * int list
 let gameHistory = ref []
 (* history is :: to the front, List.rev before giving to AI *)
 
+let is_valid_position (pos: int * int): bool =
+  match pos with
+  | x, y -> if x > 6 || x < 0 || y > 5 || y < 0 then false else true;;
+
 (* Given a board and an (x,y) position, it will return the value at
    that position in the board. *)
-let getPos (xPos : int) (yPos : int) (board : gameboard) : int =
-  if xPos < 0 || xPos > 6 || yPos < 0 || yPos > 5 then
-    failwith "Invalid position"
+let getPos (pos: int * int) (board : gameboard) : int =
+  if not @@ is_valid_position pos then failwith "Invalid position"
   else
+    match pos with
+    | xPos, yPos ->
     let _, laterRows = List.split_n board yPos in
     let currRow = List.hd_exn laterRows in
     let _, laterPositions = List.split_n currRow xPos in
@@ -40,33 +45,32 @@ let changeRow (xPos : int) (newVal : int) (row : int list) : int list =
   | [] -> failwith "Invalid position"
   | _ :: tl -> List.append firstPositions (newVal :: tl)
 
-let rec changePos (currX : int) (currY : int) (xPos : int) (yPos : int)
+let rec changePos (currX : int) (currY : int) (pos: int * int)
     (newVal : int) (board : gameboard) : gameboard =
-  if xPos < 0 || xPos > 6 || yPos < 0 || yPos > 5 then
-    failwith "Invalid position"
+  if not @@ is_valid_position pos then failwith "Invalid position"
   else
-    match board with
-    | hd :: tl ->
+    match board, pos with
+    | (hd :: tl), (xPos, yPos) ->
         if currY < yPos then
-          hd :: changePos (currX + 1) (currY + 1) xPos yPos newVal tl
+          hd :: changePos (currX + 1) (currY + 1) (xPos, yPos) newVal tl
         else changeRow xPos newVal hd :: tl
-    | [] -> failwith "Invalid board"
+    | [], (_, _) -> failwith "Invalid board"
 
 (* Given a board and a column to place a piece, it returns None if the move is
    invalid, and otherwise returns the updated board with the lowest available position
    in the column provided filled. *)
 let rec getAvailableSpace (board : gameboard) (col : int) (currRow : int) :
     int * int =
-  if getPos col currRow board = 0 then (col, currRow)
+  if getPos (col, currRow) board = 0 then (col, currRow)
   else getAvailableSpace board col (currRow + 1)
 
 (* history is updated as well*)
 let makeMove (board : gameboard) (col : int) : gameboard option =
-  if getPos col 5 board <> 0 then None
+  if getPos (col, 5) board <> 0 then None
   else
     let x, y = getAvailableSpace board col 0 in
     gameHistory := (y, x) :: !gameHistory;
-    Some (changePos 0 0 x y !currPlayer board)
+    Some (changePos 0 0 (x, y) !currPlayer board)
 
 let checkWin (board : gameboard) : bool * int =
   let horizontal board =
