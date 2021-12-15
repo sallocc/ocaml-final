@@ -597,38 +597,38 @@ let player2_first_move (pos : int * int) : int * int =
 
 let distribution_maker (p0 : int) (p1 : int) (p2 : int) (p3 : int) (p4 : int)
     (p5 : int) (p6 : int) : int =
-  <span data-count="93">i</span>f p6 + p5 + p4 + p3 + p1 + p2 + p0 = 100 then
-    <span data-count="92">l</span>et r = Random.in<span data-count="92">t</span> 100 + 1 in
+  <span data-count="76">i</span>f p6 + p5 + p4 + p3 + p1 + p2 + p0 = 100 then
+    <span data-count="75">l</span>et r = Random.in<span data-count="75">t</span> 100 + 1 in
     if r &lt;= p6 then <span data-count="2">6</span>
-    else <span data-count="90">i</span>f r &lt;= p6 + p5 then <span data-count="12">5</span>
-    else <span data-count="78">i</span>f r &lt;= p6 + p5 + p4 then <span data-count="25">4</span>
-    else <span data-count="53">i</span>f r &lt;= p6 + p5 + p4 + p3 then <span data-count="20">3</span>
-    else <span data-count="33">i</span>f r &lt;= p6 + p5 + p4 + p3 + p2 then <span data-count="21">2</span>
-    else <span data-count="12">i</span>f r &lt;= p6 + p5 + p4 + p3 + p2 + p1 then <span data-count="11">1</span>
-    else <span data-count="1">0</span>
+    else <span data-count="73">i</span>f r &lt;= p6 + p5 then <span data-count="11">5</span>
+    else <span data-count="62">i</span>f r &lt;= p6 + p5 + p4 then <span data-count="17">4</span>
+    else <span data-count="45">i</span>f r &lt;= p6 + p5 + p4 + p3 then <span data-count="20">3</span>
+    else <span data-count="25">i</span>f r &lt;= p6 + p5 + p4 + p3 + p2 then <span data-count="15">2</span>
+    else <span data-count="10">i</span>f r &lt;= p6 + p5 + p4 + p3 + p2 + p1 then <span data-count="7">1</span>
+    else <span data-count="3">0</span>
   else <span data-count="1">i</span>nvalid_arg "invalid distribution"
 
-let standard_distribution _ : int = <span data-count="84">d</span>istribution_maker 2 14 20 27 20 15 2
+let standard_distribution _ : int = <span data-count="67">d</span>istribution_maker 2 14 20 27 20 15 2
 
 let pair (a : 'a * 'a) (n : int) : 'a =
-  <span data-count="28311">m</span>atch (a, n) with
-  | <span data-count="21349">(</span>x, _), 1 -&gt; x
-  | <span data-count="6961">(</span>_, y), 2 -&gt; y
+  <span data-count="22633">m</span>atch (a, n) with
+  | <span data-count="17065">(</span>x, _), 1 -&gt; x
+  | <span data-count="5567">(</span>_, y), 2 -&gt; y
   | <span data-count="1">_</span> -&gt; invalid_arg "wrong n"
 
 (* tested correct *)
 let ai_is_valid_move (move : int * int) (history : (int * int) list) : bool =
-  <span data-count="516">m</span>atch move with
-  | <span data-count="516">x</span>, y -&gt;
+  <span data-count="414">m</span>atch move with
+  | <span data-count="414">x</span>, y -&gt;
       if x &lt; <span data-count="1">0</span> || x &gt; <span data-count="1">5</span> || y &lt; <span data-count="1">0</span> || y &gt; <span data-count="1">6</span> then <span data-count="4">f</span>alse
       else
-        <span data-count="512">p</span>ai<span data-count="512">r</span> (List.unzi<span data-count="512">p</span> history) 1
+        <span data-count="410">p</span>ai<span data-count="410">r</span> (List.unzi<span data-count="410">p</span> history) 1
         |&gt; List.foldi ~init:true ~f:(fun i acc x -&gt;
-               <span data-count="20836">i</span>f
-                 x = pai<span data-count="20836">r</span> move 1
-                 &amp;&amp; <span data-count="3480">L</span>ist.nth_ex<span data-count="3480">n</span> (pai<span data-count="3480">r</span> (List.unzi<span data-count="3480">p</span> history) 2) i = pai<span data-count="3480">r</span> move 2
-               then <span data-count="508">a</span>cc &amp;&amp; <span data-count="508">f</span>alse
-               else <span data-count="20328">a</span>cc &amp;&amp; <span data-count="10443">t</span>rue)
+               <span data-count="16654">i</span>f
+                 x = pai<span data-count="16654">r</span> move 1
+                 &amp;&amp; <span data-count="2783">L</span>ist.nth_ex<span data-count="2783">n</span> (pai<span data-count="2783">r</span> (List.unzi<span data-count="2783">p</span> history) 2) i = pai<span data-count="2783">r</span> move 2
+               then <span data-count="406">a</span>cc &amp;&amp; <span data-count="406">f</span>alse
+               else <span data-count="16248">a</span>cc &amp;&amp; <span data-count="8346">t</span>rue)
 
 let rec get_n_items (n : int) (original : (int * int) list)
     (return_list : (int * int) list) : (int * int) list =
@@ -674,11 +674,11 @@ let ai_dist_move (dist : int -&gt; int) (history : (int * int) list) : int * int
       if List.lengt<span data-count="1">h</span> history = 0 then <span data-count="0">d</span>is<span data-count="0">t</span> 0 else <span data-count="1">a</span>round_last_mov<span data-count="1">e</span> history
     in
     let rec until_valid level move repeat =
-      <span data-count="592">i</span>f level &lt; 6 then
-        <span data-count="509">i</span>f level = 4 &amp;&amp; <span data-count="85">r</span>epeat &lt;&gt; 1 then <span data-count="1">u</span>ntil_valid 0 (dis<span data-count="1">t</span> repeat) (repeat + 1)
-        else <span data-count="508">i</span>f ai_is_valid_move (level, move) history then <span data-count="1">(</span>level, move)
-        else <span data-count="507">u</span>ntil_valid (level + 1) move repeat
-      else <span data-count="83">u</span>ntil_valid 0 (dis<span data-count="83">t</span> 1) repeat
+      <span data-count="473">i</span>f level &lt; 6 then
+        <span data-count="407">i</span>f level = 4 &amp;&amp; <span data-count="68">r</span>epeat &lt;&gt; 1 then <span data-count="1">u</span>ntil_valid 0 (dis<span data-count="1">t</span> repeat) (repeat + 1)
+        else <span data-count="406">i</span>f ai_is_valid_move (level, move) history then <span data-count="1">(</span>level, move)
+        else <span data-count="405">u</span>ntil_valid (level + 1) move repeat
+      else <span data-count="66">u</span>ntil_valid 0 (dis<span data-count="66">t</span> 1) repeat
     in
     until_valid 0 m 0
 

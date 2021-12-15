@@ -328,13 +328,13 @@ let empty =
     [ 0; 0; 0; 0; 0; 0; 0 ];
   ]
 
-let currPlayer = ref 1
+let curr_player = ref 1
 
-let setPlayer (player : int) = <span data-count="18">c</span>urrPlayer := player
+let set_player (player : int) = <span data-count="18">c</span>urr_player := player
 
 type history = int * int list
 
-let gameHistory = ref []
+let game_history = ref []
 (* history is :: to the front, List.rev before giving to AI *)
 
 let is_valid_position (pos: int * int): bool =
@@ -343,57 +343,57 @@ let is_valid_position (pos: int * int): bool =
 
 (* Given a board and an (x,y) position, it will return the value at
    that position in the board. *)
-let getPos (pos: int * int) (board : gameboard) : int =
+let get_pos (pos: int * int) (board : gameboard) : int =
   <span data-count="15">i</span>f not @@ is_valid_positio<span data-count="15">n</span> pos then <span data-count="3">f</span>ailwith "Invalid position"
   else
     <span data-count="12">m</span>atch pos with
-    | <span data-count="12">x</span>Pos, yPos -&gt;
-    let _, laterRows = List.split_n board yPos in
-    <span data-count="12">l</span>et currRow = List.hd_exn laterRows in
-    <span data-count="12">l</span>et _, laterPositions = List.split_n currRow xPos in
-    <span data-count="12">L</span>ist.hd_exn laterPositions
+    | <span data-count="12">x</span>_pos, y_pos -&gt;
+    let _, laterRows = List.split_n board y_pos in
+    <span data-count="12">l</span>et curr_row = List.hd_exn laterRows in
+    <span data-count="12">l</span>et _, later_positions = List.split_n curr_row x_pos in
+    <span data-count="12">L</span>ist.hd_exn later_positions
 
-let changeRow (xPos : int) (newVal : int) (row : int list) : int list =
-  <span data-count="6">l</span>et firstPositions, laterPositions = List.split_n row xPos in
-  <span data-count="6">m</span>atch laterPositions with
+let change_row (x_pos : int) (new_val : int) (row : int list) : int list =
+  <span data-count="6">l</span>et first_positions, later_positions = List.split_n row x_pos in
+  <span data-count="6">m</span>atch later_positions with
   | <span data-count="2">[</span>] -&gt; failwith "Invalid position"
-  | <span data-count="4">_</span> :: tl -&gt; List.append firstPositions (newVal :: tl)
+  | <span data-count="4">_</span> :: tl -&gt; List.append first_positions (new_val :: tl)
 
-let rec changePos (currX : int) (currY : int) (pos: int * int)
-    (newVal : int) (board : gameboard) : gameboard =
+let rec change_pos (curr_x : int) (curr_y : int) (pos: int * int)
+    (new_val : int) (board : gameboard) : gameboard =
   <span data-count="25">i</span>f not @@ is_valid_positio<span data-count="25">n</span> pos then <span data-count="3">f</span>ailwith "Invalid position"
   else
     <span data-count="22">m</span>atch board, pos with
-    | <span data-count="19">(</span>hd :: tl), (xPos, yPos) -&gt;
-        if currY &lt; yPos then
-          <span data-count="15">h</span>d :: changePo<span data-count="10">s</span> (currX + 1) (currY + 1) (xPos, yPos) newVal tl
-        else <span data-count="4">c</span>hangeRo<span data-count="4">w</span> xPos newVal hd :: tl
+    | <span data-count="19">(</span>hd :: tl), (x_pos, y_pos) -&gt;
+        if curr_y &lt; y_pos then
+          <span data-count="15">h</span>d :: change_po<span data-count="10">s</span> (curr_x + 1) (curr_y + 1) (x_pos, y_pos) new_val tl
+        else <span data-count="4">c</span>hange_ro<span data-count="4">w</span> x_pos new_val hd :: tl
     | <span data-count="3">[</span>], (_, _) -&gt; failwith "Invalid board"
 
 (* Given a board and a column to place a piece, it returns None if the move is
    invalid, and otherwise returns the updated board with the lowest available position
    in the column provided filled. *)
-let rec getAvailableSpace (board : gameboard) (col : int) (currRow : int) :
+let rec get_available_space (board : gameboard) (col : int) (curr_row : int) :
     int * int =
-  <span data-count="4">i</span>f getPo<span data-count="4">s</span> (col, currRow) board = 0 then <span data-count="2">(</span>col, currRow)
-  else <span data-count="2">g</span>etAvailableSpace board col (currRow + 1)
+  <span data-count="4">i</span>f get_po<span data-count="4">s</span> (col, curr_row) board = 0 then <span data-count="2">(</span>col, curr_row)
+  else <span data-count="2">g</span>et_available_space board col (curr_row + 1)
 
 (* history is updated as well*)
-let makeMove (board : gameboard) (col : int) : gameboard option =
-  <span data-count="8">i</span>f getPo<span data-count="8">s</span> (col, 5) board &lt;&gt; 0 then <span data-count="6">N</span>one
+let make_Move (board : gameboard) (col : int) : gameboard option =
+  <span data-count="8">i</span>f get_po<span data-count="8">s</span> (col, 5) board &lt;&gt; 0 then <span data-count="6">N</span>one
   else
-    <span data-count="2">l</span>et x, y = getAvailableSpace board col 0 in
-    <span data-count="2">g</span>ameHistory := (y, x) :: !gameHistory;
-    Some (changePo<span data-count="2">s</span> 0 0 (x, y) !currPlayer board)
+    <span data-count="2">l</span>et x, y = get_available_space board col 0 in
+    <span data-count="2">g</span>ame_history := (y, x) :: !game_history;
+    Some (change_po<span data-count="2">s</span> 0 0 (x, y) !curr_player board)
 
-let checkWin (board : gameboard) : bool * int =
+let check_win (board : gameboard) : bool * int =
   <span data-count="8">l</span>et horizontal board =
     <span data-count="8">L</span>ist.fold board ~init:false ~f:(fun acc x -&gt;
         <span data-count="48">a</span>c<span data-count="10">c</span>
         ||
         match
           List.fold x ~init:0 ~f:(fun acc y -&gt;
-              <span data-count="266">i</span>f acc = 4 then <span data-count="3">4</span> else <span data-count="263">i</span>f y = !currPlayer then <span data-count="64">a</span>cc + 1 else <span data-count="199">0</span>)
+              <span data-count="266">i</span>f acc = 4 then <span data-count="3">4</span> else <span data-count="263">i</span>f y = !curr_player then <span data-count="64">a</span>cc + 1 else <span data-count="199">0</span>)
         with
         | <span data-count="2">4</span> -&gt; true
         | <span data-count="36">_</span> -&gt; fals<span data-count="2">e</span>)
@@ -406,7 +406,7 @@ let checkWin (board : gameboard) : bool * int =
         match
           List.fold board ~init:0 ~f:(fun acc x -&gt;
               <span data-count="222">i</span>f acc = 4 then <span data-count="2">4</span>
-              else <span data-count="220">i</span>f List.nth_ex<span data-count="220">n</span> x i = !currPlayer then <span data-count="56">a</span>cc + 1
+              else <span data-count="220">i</span>f List.nth_ex<span data-count="220">n</span> x i = !curr_player then <span data-count="56">a</span>cc + 1
               else <span data-count="164">0</span>)
         with
         | <span data-count="1">4</span> -&gt; true
@@ -421,7 +421,7 @@ let checkWin (board : gameboard) : bool * int =
                  <span data-count="91">i</span>f j &gt; 3 then <span data-count="39">a</span>cc2
                  else
                    <span data-count="52">a</span>cc<span data-count="3">2</span>
-                   || x = !currPlayer
+                   || x = !curr_player
                       &amp;&amp; <span data-count="4">x</span> = List.nth_ex<span data-count="4">n</span> (List.nth_ex<span data-count="4">n</span> board (i - 1)) (j + 1)
                       &amp;&amp; <span data-count="2">x</span> = List.nth_ex<span data-count="2">n</span> (List.nth_ex<span data-count="2">n</span> board (i - 2)) (j + 2)
                       &amp;&amp; <span data-count="1">x</span> = List.nth_ex<span data-count="1">n</span> (List.nth_ex<span data-count="1">n</span> board (i - 3)) (j + 3<span data-count="1">)</span>))
@@ -435,21 +435,21 @@ let checkWin (board : gameboard) : bool * int =
                  <span data-count="56">i</span>f j &gt; 3 then <span data-count="24">a</span>cc2
                  else
                    <span data-count="32">a</span>cc<span data-count="2">2</span>
-                   || x = !currPlayer
+                   || x = !curr_player
                       &amp;&amp; <span data-count="9">x</span> = List.nth_ex<span data-count="9">n</span> (List.nth_ex<span data-count="9">n</span> board (i + 1)) (j + 1)
                       &amp;&amp; <span data-count="4">x</span> = List.nth_ex<span data-count="4">n</span> (List.nth_ex<span data-count="4">n</span> board (i + 2)) (j + 2)
                       &amp;&amp; <span data-count="3">x</span> = List.nth_ex<span data-count="3">n</span> (List.nth_ex<span data-count="3">n</span> board (i + 3)) (j + 3<span data-count="3">)</span>))
   in
   ( horizonta<span data-count="8">l</span> boar<span data-count="2">d</span> || vertica<span data-count="6">l</span> boar<span data-count="1">d</span> || diagonal<span data-count="5">1</span> boar<span data-count="1">d</span> || diagonal<span data-count="4">2</span> boar<span data-count="3">d</span>,
-    !currPlayer )
+    !curr_player )
 
 (* -1 if it's draw else 1 or 2 *)
-let is_game_over board h =
-  <span data-count="8">m</span>atch (List.lengt<span data-count="8">h</span> h, checkWi<span data-count="8">n</span> board) with
+let is_game_over (board : gameboard) (h : 'a list) : bool*int =
+  <span data-count="8">m</span>atch (List.lengt<span data-count="8">h</span> h, check_wi<span data-count="8">n</span> board) with
   | <span data-count="1">4</span>2, (false, _) -&gt; (true, -1)
   | <span data-count="7">_</span>, z -&gt; z
 
-let history_to_board history =
+let history_to_board (history : (int * int) list) : gameboard=
   <span data-count="2">L</span>ist.foldi history ~init:empty ~f:(fun i acc (j, k) -&gt;
       <span data-count="10">L</span>ist.mapi acc ~f:(fun i1 x -&gt;
           <span data-count="60">i</span>f i1 = j then

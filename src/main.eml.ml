@@ -73,7 +73,7 @@ let show_form ?message request =
 %   | _ ->
       <p>Player <%i winner.contents %> is the <b>winner</b>!!!</p>
 %   end;
-%   let game_history_length = List.length gameHistory.contents in
+%   let game_history_length = List.length game_history.contents in
     <p> <%i game_history_length %> moves so far!</p>
     </body> 
     </html>
@@ -87,10 +87,10 @@ let () =
     Dream.get  "/"
       (fun request ->
         tempBoard := emptyBoard;
-        setPlayer 1;
-        if ai_first = 1 then gameHistory := [(0, 3)] else gameHistory := [];
+        set_player 1;
+        if ai_first = 1 then game_history := [(0, 3)] else game_history := [];
         winner := 0;
-        if ai_first = 1 then currPlayer := 2 else currPlayer := 1;
+        if ai_first = 1 then curr_player := 2 else curr_player := 1;
         Dream.html (show_form ~message:(List.rev tempBoard.contents) request));
 
     Dream.post "/"
@@ -99,25 +99,25 @@ let () =
         | `Ok ["move", move] ->
           let moveCol = int_of_string move in
           if moveCol <= 6 && moveCol >= 0 then
-          (match makeMove tempBoard.contents moveCol with
+          (match make_Move tempBoard.contents moveCol with
           | None -> ()
           | Some newBoard -> tempBoard := newBoard; 
-          let gameOver, gameWinner = is_game_over newBoard gameHistory.contents in
-          if currPlayer.contents = 1 then setPlayer 2
-          else setPlayer 1;
+          let gameOver, gameWinner = is_game_over newBoard game_history.contents in
+          if curr_player.contents = 1 then set_player 2
+          else set_player 1;
           (match gameOver with
           | false -> winner := winner.contents;
-              let _, x = ai_move (List.rev gameHistory.contents) 12 ai_dist standard_distribution 20 in
-              (match makeMove tempBoard.contents x with
+              let _, x = ai_move (List.rev game_history.contents) 12 ai_dist standard_distribution 20 in
+              (match make_Move tempBoard.contents x with
               | None -> ()
               | Some ainewBoard -> tempBoard := ainewBoard;
-              let ai_game_over, ai_game_winner = is_game_over ainewBoard gameHistory.contents in
+              let ai_game_over, ai_game_winner = is_game_over ainewBoard game_history.contents in
               (match ai_game_over with
               | false -> winner := winner.contents;
               | true -> winner := ai_game_winner;););
           | true -> winner := gameWinner;);
-          if currPlayer.contents = 1 then setPlayer 2
-          else setPlayer 1;)
+          if curr_player.contents = 1 then set_player 2
+          else set_player 1;)
           else tempBoard := tempBoard.contents;
           Dream.html (show_form ~message:(List.rev tempBoard.contents) request)
         | _ ->

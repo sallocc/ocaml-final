@@ -14,13 +14,13 @@ let empty =
     [ 0; 0; 0; 0; 0; 0; 0 ];
   ]
 
-let currPlayer = ref 1
+let curr_player = ref 1
 
-let setPlayer (player : int) = currPlayer := player
+let set_player (player : int) = curr_player := player
 
 type history = int * int list
 
-let gameHistory = ref []
+let game_history = ref []
 (* history is :: to the front, List.rev before giving to AI *)
 
 let is_valid_position (pos: int * int): bool =
@@ -29,57 +29,57 @@ let is_valid_position (pos: int * int): bool =
 
 (* Given a board and an (x,y) position, it will return the value at
    that position in the board. *)
-let getPos (pos: int * int) (board : gameboard) : int =
+let get_pos (pos: int * int) (board : gameboard) : int =
   if not @@ is_valid_position pos then failwith "Invalid position"
   else
     match pos with
-    | xPos, yPos ->
-    let _, laterRows = List.split_n board yPos in
-    let currRow = List.hd_exn laterRows in
-    let _, laterPositions = List.split_n currRow xPos in
-    List.hd_exn laterPositions
+    | x_pos, y_pos ->
+    let _, laterRows = List.split_n board y_pos in
+    let curr_row = List.hd_exn laterRows in
+    let _, later_positions = List.split_n curr_row x_pos in
+    List.hd_exn later_positions
 
-let changeRow (xPos : int) (newVal : int) (row : int list) : int list =
-  let firstPositions, laterPositions = List.split_n row xPos in
-  match laterPositions with
+let change_row (x_pos : int) (new_val : int) (row : int list) : int list =
+  let first_positions, later_positions = List.split_n row x_pos in
+  match later_positions with
   | [] -> failwith "Invalid position"
-  | _ :: tl -> List.append firstPositions (newVal :: tl)
+  | _ :: tl -> List.append first_positions (new_val :: tl)
 
-let rec changePos (currX : int) (currY : int) (pos: int * int)
-    (newVal : int) (board : gameboard) : gameboard =
+let rec change_pos (curr_x : int) (curr_y : int) (pos: int * int)
+    (new_val : int) (board : gameboard) : gameboard =
   if not @@ is_valid_position pos then failwith "Invalid position"
   else
     match board, pos with
-    | (hd :: tl), (xPos, yPos) ->
-        if currY < yPos then
-          hd :: changePos (currX + 1) (currY + 1) (xPos, yPos) newVal tl
-        else changeRow xPos newVal hd :: tl
+    | (hd :: tl), (x_pos, y_pos) ->
+        if curr_y < y_pos then
+          hd :: change_pos (curr_x + 1) (curr_y + 1) (x_pos, y_pos) new_val tl
+        else change_row x_pos new_val hd :: tl
     | [], (_, _) -> failwith "Invalid board"
 
 (* Given a board and a column to place a piece, it returns None if the move is
    invalid, and otherwise returns the updated board with the lowest available position
    in the column provided filled. *)
-let rec getAvailableSpace (board : gameboard) (col : int) (currRow : int) :
+let rec get_available_space (board : gameboard) (col : int) (curr_row : int) :
     int * int =
-  if getPos (col, currRow) board = 0 then (col, currRow)
-  else getAvailableSpace board col (currRow + 1)
+  if get_pos (col, curr_row) board = 0 then (col, curr_row)
+  else get_available_space board col (curr_row + 1)
 
 (* history is updated as well*)
-let makeMove (board : gameboard) (col : int) : gameboard option =
-  if getPos (col, 5) board <> 0 then None
+let make_Move (board : gameboard) (col : int) : gameboard option =
+  if get_pos (col, 5) board <> 0 then None
   else
-    let x, y = getAvailableSpace board col 0 in
-    gameHistory := (y, x) :: !gameHistory;
-    Some (changePos 0 0 (x, y) !currPlayer board)
+    let x, y = get_available_space board col 0 in
+    game_history := (y, x) :: !game_history;
+    Some (change_pos 0 0 (x, y) !curr_player board)
 
-let checkWin (board : gameboard) : bool * int =
+let check_win (board : gameboard) : bool * int =
   let horizontal board =
     List.fold board ~init:false ~f:(fun acc x ->
         acc
         ||
         match
           List.fold x ~init:0 ~f:(fun acc y ->
-              if acc = 4 then 4 else if y = !currPlayer then acc + 1 else 0)
+              if acc = 4 then 4 else if y = !curr_player then acc + 1 else 0)
         with
         | 4 -> true
         | _ -> false)
@@ -92,7 +92,7 @@ let checkWin (board : gameboard) : bool * int =
         match
           List.fold board ~init:0 ~f:(fun acc x ->
               if acc = 4 then 4
-              else if List.nth_exn x i = !currPlayer then acc + 1
+              else if List.nth_exn x i = !curr_player then acc + 1
               else 0)
         with
         | 4 -> true
@@ -107,7 +107,7 @@ let checkWin (board : gameboard) : bool * int =
                  if j > 3 then acc2
                  else
                    acc2
-                   || x = !currPlayer
+                   || x = !curr_player
                       && x = List.nth_exn (List.nth_exn board (i - 1)) (j + 1)
                       && x = List.nth_exn (List.nth_exn board (i - 2)) (j + 2)
                       && x = List.nth_exn (List.nth_exn board (i - 3)) (j + 3)))
@@ -121,21 +121,21 @@ let checkWin (board : gameboard) : bool * int =
                  if j > 3 then acc2
                  else
                    acc2
-                   || x = !currPlayer
+                   || x = !curr_player
                       && x = List.nth_exn (List.nth_exn board (i + 1)) (j + 1)
                       && x = List.nth_exn (List.nth_exn board (i + 2)) (j + 2)
                       && x = List.nth_exn (List.nth_exn board (i + 3)) (j + 3)))
   in
   ( horizontal board || vertical board || diagonal1 board || diagonal2 board,
-    !currPlayer )
+    !curr_player )
 
 (* -1 if it's draw else 1 or 2 *)
-let is_game_over board h =
-  match (List.length h, checkWin board) with
+let is_game_over (board : gameboard) (h : 'a list) : bool*int =
+  match (List.length h, check_win board) with
   | 42, (false, _) -> (true, -1)
   | _, z -> z
 
-let history_to_board history =
+let history_to_board (history : (int * int) list) : gameboard=
   List.foldi history ~init:empty ~f:(fun i acc (j, k) ->
       List.mapi acc ~f:(fun i1 x ->
           if i1 = j then

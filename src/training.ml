@@ -27,8 +27,8 @@ let sexp_to_map (filename : string) : Pos_grams.distribution =
 
 let switch_player (history : 'a list) =
   match List.length history % 2 with
-  | 0 -> setPlayer 2
-  | 1 -> setPlayer 1
+  | 0 -> set_player 2
+  | 1 -> set_player 1
   | _ -> ()
 
 let ai_trainning_move (dist : int -> int) (history : (int * int) list) :
