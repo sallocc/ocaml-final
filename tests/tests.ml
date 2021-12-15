@@ -93,7 +93,6 @@ let test_pair _ =
   assert_equal 1 @@ pair (1, 2) 1;
   assert_equal 2 @@ pair (1, 2) 2
 
-
 (*  for coverage purpose*)
 let test_player2_first_move _ =
   assert_equal (0, 3) @@ player2_first_move (0, 0);
@@ -111,7 +110,6 @@ let test_ai_is_valid_move _ =
   assert_equal false @@ ai_is_valid_move (0, 7) [ (0, 0) ];
   assert_equal false @@ ai_is_valid_move (7, 7) [ (0, 0) ];
   assert_equal false @@ ai_is_valid_move (1, -1) [ (0, 0) ]
-
 
 let test_get_last_n_moves _ =
   assert_equal [] @@ get_last_n_moves 5 [];
@@ -208,73 +206,99 @@ let abc =
   Pos_grams.ngrams 4 1
     [ (0, 1); (0, 2); (0, 3); (0, 4); (0, 5); (0, 6); (0, 7) ]
 
+let abb =
+  Pos_grams.ngrams 4 1
+    [ (0, 1); (0, 2); (0, 3); (0, 4); (0, 5); (0, 6); (0, 7) ]
+
 let bcd =
   Pos_grams.ngrams 4 2
     [ (0, 1); (0, 2); (0, 3); (0, 4); (0, 5); (0, 6); (0, 7) ]
-let cde =
-  Pos_grams.ngrams 4 1
-    [ (0, 4); (0, 5); (0, 6); (0, 7) ]
+
+let cde = Pos_grams.ngrams 4 1 [ (0, 4); (0, 5); (0, 6); (0, 7) ]
+
 let bad_dist =
-  Pos_grams.ngrams 4 1
-    [ (-1, -1); (7, 7); (8, 8); (-1, -1);(-1, -1) ]
-        
+  Pos_grams.ngrams 4 1 [ (-1, -1); (7, 7); (8, 8); (-1, -1); (-1, -1) ]
+
 let test_ai_move _ =
   assert_equal (0, 5)
   @@ ai_move [ (0, 2); (0, 3); (0, 4) ] 3 abc standard_distribution 10;
   assert_equal (0, 4)
   @@ ai_move [ (0, 1); (0, 2); (0, 3) ] 3 bcd standard_distribution 10;
-  assert_equal (0, 3)
-  @@ ai_move [] 3 bcd standard_distribution 10;
-  assert_equal (1, 3)
-  @@ ai_move [(0,3)] 3 bcd standard_distribution 10;
+  assert_equal (0, 3) @@ ai_move [] 3 bcd standard_distribution 10;
+  assert_equal (1, 3) @@ ai_move [ (0, 3) ] 3 bcd standard_distribution 10;
   assert_equal (2, 3)
-  @@ ai_move [(0,3);(1,3)] 3 bcd standard_distribution 10
+  @@ ai_move [ (0, 3); (1, 3) ] 3 bcd standard_distribution 10
 
-
-let test_player1_second_move _ = 
-  assert_equal (1,3) @@ player1_second_move (0,0);
-  assert_equal (1,1) @@ player1_second_move (0,1);
-  assert_equal (1,2) @@ player1_second_move (0,2);
-  assert_equal (2,3) @@ player1_second_move (1,3);
-  assert_equal (1,4) @@ player1_second_move (0,4);
-  assert_equal (1,5) @@ player1_second_move (0,5);
-  assert_equal (1,3) @@ player1_second_move (0,6)
+let test_player1_second_move _ =
+  assert_equal (1, 3) @@ player1_second_move (0, 0);
+  assert_equal (1, 1) @@ player1_second_move (0, 1);
+  assert_equal (1, 2) @@ player1_second_move (0, 2);
+  assert_equal (2, 3) @@ player1_second_move (1, 3);
+  assert_equal (1, 4) @@ player1_second_move (0, 4);
+  assert_equal (1, 5) @@ player1_second_move (0, 5);
+  assert_equal (1, 3) @@ player1_second_move (0, 6)
 
 let test_new_invalid _ =
-  let invalid_p2 _ = player2_first_move (-1,-1) in
+  let invalid_p2 _ = player2_first_move (-1, -1) in
   assert_raises (Invalid_argument "invalid input") invalid_p2;
-  let invalid_p1 _ = player1_second_move (-1,-1) in
+  let invalid_p1 _ = player1_second_move (-1, -1) in
   assert_raises (Invalid_argument "invalid input") invalid_p1;
   let invalid_dist _ = distribution_maker 0 0 0 0 0 0 0 in
   assert_raises (Invalid_argument "invalid distribution") invalid_dist;
-  let invalid_pair _ = pair (1,1) 3 in
+  let invalid_pair _ = pair (1, 1) 3 in
   assert_raises (Invalid_argument "wrong n") invalid_pair;
   let invalid_moves _ = get_last_n_moves 1 [] in
-  assert_raises (Invalid_argument "n is designed to be greater than 2") invalid_moves;
+  assert_raises (Invalid_argument "n is designed to be greater than 2")
+    invalid_moves;
   let invalid_moves' _ = get_last_n_moves 21 [] in
-  assert_raises (Invalid_argument "n is designed to be less than 20") invalid_moves';
-  let invalid_ai_dist _ =   ai_dist_move standard_distribution (almost_full_h @ [(5,6)]) in
+  assert_raises (Invalid_argument "n is designed to be less than 20")
+    invalid_moves';
+  let invalid_ai_dist _ =
+    ai_dist_move standard_distribution (almost_full_h @ [ (5, 6) ])
+  in
   assert_raises (Invalid_argument "invalid history") invalid_ai_dist;
-  let invalid_around _ = around_last_move [(-1,-1)] in
+  let invalid_around _ = around_last_move [ (-1, -1) ] in
   assert_raises (Invalid_argument "invalid history") invalid_around;
-  let invalid_sequence _ = wining_sequence 0 3 [] in 
+  let invalid_sequence _ = wining_sequence 0 3 [] in
   assert_raises (Invalid_argument "winner has wrong value") invalid_sequence
-  
-  
-  (* let invalid''''''' _ = pair _ 3 in
-  assert_raises (Invalid_argument "wrong n") invalid''''''' *)
+
+(* let invalid''''''' _ = pair _ 3 in
+   assert_raises (Invalid_argument "wrong n") invalid''''''' *)
 let test_merge_distribution _ =
-  assert_equal ([[(0, 1); (0, 2); (0, 3)]; [(0, 2); (0, 3); (0, 4)]; [(0, 3); (0, 4); (0, 5)];
-  [(0, 4); (0, 5); (0, 6)]]) @@ (merge_distribution abc bcd |> Map.keys);
-  assert_equal ([[(0, 2); (0, 3); (0, 4)]; [(0, 4); (0, 5); (0, 6)]]) @@ (merge_distribution abc cde |> Map.keys);
-  assert_equal ([[(0, 2); (0, 3); (0, 4)]; [(0, 4); (0, 5); (0, 6)];
- [(7, 7); (8, 8); (-1, -1)]]) @@  (merge_distribution bad_dist abc |> Map.keys)
-  
+  assert_equal
+    [
+      [ (0, 1); (0, 2); (0, 3) ];
+      [ (0, 2); (0, 3); (0, 4) ];
+      [ (0, 3); (0, 4); (0, 5) ];
+      [ (0, 4); (0, 5); (0, 6) ];
+    ]
+  @@ (merge_distribution abc bcd |> Map.keys);
+  assert_equal [ [ (0, 2); (0, 3); (0, 4) ]; [ (0, 4); (0, 5); (0, 6) ] ]
+  @@ (merge_distribution abc cde |> Map.keys);
+  assert_equal
+    [
+      [ (0, 2); (0, 3); (0, 4) ];
+      [ (0, 4); (0, 5); (0, 6) ];
+      [ (7, 7); (8, 8); (-1, -1) ];
+    ]
+  @@ (merge_distribution bad_dist abc |> Map.keys);
+  assert_equal [ [ (0, 2); (0, 3); (0, 4) ]; [ (0, 4); (0, 5); (0, 6) ] ]
+  @@ (merge_distribution abb abc |> Map.keys)
+
+let test_distribution_maker _ =
+  assert_equal 0 @@ distribution_maker 100 0 0 0 0 0 0;
+  assert_equal 1 @@ distribution_maker 0 100 0 0 0 0 0;
+  assert_equal 2 @@ distribution_maker 0 0 100 0 0 0 0;
+  assert_equal 3 @@ distribution_maker 0 0 0 100 0 0 0;
+  assert_equal 4 @@ distribution_maker 0 0 0 0 100 0 0;
+  assert_equal 5 @@ distribution_maker 0 0 0 0 0 100 0;
+  assert_equal 6 @@ distribution_maker 0 0 0 0 0 0 100
   
 let new_lib_test =
   "new lib test"
   >: test_list
        [
+         "Test Distribution Maker" >:: test_distribution_maker;
          "Merge Distribution" >:: test_merge_distribution;
          " ALL invalid cases" >:: test_new_invalid;
          "AI Move" >:: test_ai_move;
@@ -471,15 +495,13 @@ let changeBoard1'' =
 
 let change_position _ =
   assert_equal changeBoard1' @@ changePos 0 0 (3, 3) 1 changeBoard1;
-  assert_equal changeBoard1'' @@ changePos 0 0 (6, 5) 0 changeBoard1';
-;;
+  assert_equal changeBoard1'' @@ changePos 0 0 (6, 5) 0 changeBoard1'
 
 let set_player _ =
   setPlayer 1;
   assert_equal !currPlayer @@ 1;
   setPlayer 2;
-  assert_equal !currPlayer @@ 2;
-;;
+  assert_equal !currPlayer @@ 2
 
 let test_invalid_position _ =
   let invalid_get _ = getPos (-1, -1) moveBoard1 in
@@ -488,35 +510,30 @@ let test_invalid_position _ =
   assert_raises (Failure "Invalid position") @@ invalid_get';
   let invalid_get'' _ = getPos (10, -1) moveBoard1 in
   assert_raises (Failure "Invalid position") @@ invalid_get'';
-  let invalid_row _ = changeRow 8 2 [1; 0; 0; 1; 2; 1; 1] in
+  let invalid_row _ = changeRow 8 2 [ 1; 0; 0; 1; 2; 1; 1 ] in
   assert_raises (Failure "Invalid position") @@ invalid_row;
-  let invalid_row' _ = changeRow 20 2 [1; 0; 0; 1; 2; 1; 1] in
+  let invalid_row' _ = changeRow 20 2 [ 1; 0; 0; 1; 2; 1; 1 ] in
   assert_raises (Failure "Invalid position") @@ invalid_row';
   let invalid_position _ = changePos 0 0 (6, 7) 0 moveBoard1 in
   assert_raises (Failure "Invalid position") @@ invalid_position;
   let invalid_position' _ = changePos 0 0 (-2, 7) 0 moveBoard1 in
   assert_raises (Failure "Invalid position") @@ invalid_position';
   let invalid_position'' _ = changePos 0 0 (0, -3) 0 moveBoard1 in
-  assert_raises (Failure "Invalid position") @@ invalid_position'';
-;;
+  assert_raises (Failure "Invalid position") @@ invalid_position''
 
-let invalidBoard1 = [[1; 0; 2];
-                    [0; 0; 1];
-                    [1; 1; 1]]
+let invalidBoard1 = [ [ 1; 0; 2 ]; [ 0; 0; 1 ]; [ 1; 1; 1 ] ]
 
-let invalidBoard2 = [[1]]
+let invalidBoard2 = [ [ 1 ] ]
 
-let invalidBoard3 = [[]]
+let invalidBoard3 = [ [] ]
 
-let test_invalid_board _ = 
+let test_invalid_board _ =
   let invalid_board _ = changePos 0 0 (4, 4) 2 invalidBoard1 in
-  assert_raises (Failure "Invalid board") @@ invalid_board; 
+  assert_raises (Failure "Invalid board") @@ invalid_board;
   let invalid_board' _ = changePos 0 0 (4, 4) 2 invalidBoard2 in
   assert_raises (Failure "Invalid board") @@ invalid_board';
   let invalid_board'' _ = changePos 0 0 (4, 4) 2 invalidBoard3 in
-  assert_raises (Failure "Invalid board") @@ invalid_board'';
-;;
-
+  assert_raises (Failure "Invalid board") @@ invalid_board''
 
 let board_test =
   "Board tests"
