@@ -25,13 +25,16 @@ let test_invalid_split_last _ =
   let invalid_split_last _ = split_last [] in
   assert_raises (Invalid_argument "empty list") invalid_split_last
 
-let exercise1_2_test =
-  "Exercise 1 and 2"
+let test_sample _ = assert_equal None @@ sample (Bag.create ())
+
+let basic_lib_test =
+  "Basic Lib Test"
   >: test_list
        [
-         "invalid_chunks" >:: test_invalid_chunks;
-         "split_last" >:: test_split_last;
-         "invalid_split_last" >:: test_invalid_split_last;
+         "Invalid Chunks" >:: test_invalid_chunks;
+         "Split Last" >:: test_split_last;
+         "Invalid Split Last" >:: test_invalid_split_last;
+         "Sample" >:: test_sample;
        ]
 
 module N = N_grams (Int)
@@ -62,18 +65,11 @@ let test_ngrams _ =
   assert_equal [ [ 1 ] ] @@ fold_sample_test 1 1 [ 1 ];
   assert_equal [] @@ fold_sample_test 1 2 [ 1 ]
 
-let ngram_test = "N Gram" >: test_list [ "ngrams" >:: test_ngrams ]
-
 let test_desome _ = assert_equal 1 @@ desome (Some 1)
 
 let test_invalid_desome _ =
   let invalid_desome _ = desome None in
   assert_raises (Invalid_argument "none case") invalid_desome
-
-let my_test =
-  "my_test"
-  >: test_list
-       [ "desome" >:: test_desome; "invalid_desome" >:: test_invalid_desome ]
 
 module Int_Map = Map.Make (Int)
 module String_list = List_key (String)
@@ -93,7 +89,6 @@ let test_pair _ =
   assert_equal 1 @@ pair (1, 2) 1;
   assert_equal 2 @@ pair (1, 2) 2
 
-(*  for coverage purpose*)
 let test_player2_first_move _ =
   assert_equal (0, 3) @@ player2_first_move (0, 0);
   assert_equal (0, 2) @@ player2_first_move (0, 1);
@@ -262,8 +257,6 @@ let test_new_invalid _ =
   let invalid_sequence _ = wining_sequence 0 3 [] in
   assert_raises (Invalid_argument "winner has wrong value") invalid_sequence
 
-(* let invalid''''''' _ = pair _ 3 in
-   assert_raises (Invalid_argument "wrong n") invalid''''''' *)
 let test_merge_distribution _ =
   assert_equal
     [
@@ -293,11 +286,14 @@ let test_distribution_maker _ =
   assert_equal 4 @@ distribution_maker 0 0 0 0 100 0 0;
   assert_equal 5 @@ distribution_maker 0 0 0 0 0 100 0;
   assert_equal 6 @@ distribution_maker 0 0 0 0 0 0 100
-  
+
 let new_lib_test =
   "new lib test"
   >: test_list
        [
+         "Desome" >:: test_desome;
+         "Invalid Desome" >:: test_invalid_desome;
+         "N Gram" >:: test_ngrams;
          "Test Distribution Maker" >:: test_distribution_maker;
          "Merge Distribution" >:: test_merge_distribution;
          " ALL invalid cases" >:: test_new_invalid;
@@ -549,20 +545,7 @@ let board_test =
          "Invalid board" >:: test_invalid_board;
        ]
 
-let test_sample _ = assert_equal None @@ sample (Bag.create ())
-
-let exercise3_4_test =
-  "Exercise 3 and 4" >: test_list [ "sample" >:: test_sample ]
-
 let series =
-  "Assignment4 P1 & P2 Tests"
-  >::: [
-         exercise1_2_test;
-         exercise3_4_test;
-         ngram_test;
-         my_test;
-         new_lib_test;
-         board_test;
-       ]
+  "Assignment4 P1 & P2 Tests" >::: [ basic_lib_test; new_lib_test; board_test ]
 
 let () = run_test_tt_main series
