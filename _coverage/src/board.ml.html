@@ -379,7 +379,7 @@ let rec get_available_space (board : gameboard) (col : int) (curr_row : int) :
   else <span data-count="2">g</span>et_available_space board col (curr_row + 1)
 
 (* history is updated as well*)
-let make_Move (board : gameboard) (col : int) : gameboard option =
+let make_move (board : gameboard) (col : int) : gameboard option =
   <span data-count="8">i</span>f get_po<span data-count="8">s</span> (col, 5) board &lt;&gt; 0 then <span data-count="6">N</span>one
   else
     <span data-count="2">l</span>et x, y = get_available_space board col 0 in

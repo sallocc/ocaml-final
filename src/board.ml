@@ -65,7 +65,7 @@ let rec get_available_space (board : gameboard) (col : int) (curr_row : int) :
   else get_available_space board col (curr_row + 1)
 
 (* history is updated as well*)
-let make_Move (board : gameboard) (col : int) : gameboard option =
+let make_move (board : gameboard) (col : int) : gameboard option =
   if get_pos (col, 5) board <> 0 then None
   else
     let x, y = get_available_space board col 0 in

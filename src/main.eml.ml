@@ -99,7 +99,7 @@ let () =
         | `Ok ["move", move] ->
           let moveCol = int_of_string move in
           if moveCol <= 6 && moveCol >= 0 then
-          (match make_Move tempBoard.contents moveCol with
+          (match make_move tempBoard.contents moveCol with
           | None -> ()
           | Some newBoard -> tempBoard := newBoard; 
           let gameOver, gameWinner = is_game_over newBoard game_history.contents in
@@ -108,7 +108,7 @@ let () =
           (match gameOver with
           | false -> winner := winner.contents;
               let _, x = ai_move (List.rev game_history.contents) 12 ai_dist standard_distribution 20 in
-              (match make_Move tempBoard.contents x with
+              (match make_move tempBoard.contents x with
               | None -> ()
               | Some ainewBoard -> tempBoard := ainewBoard;
               let ai_game_over, ai_game_winner = is_game_over ainewBoard game_history.contents in

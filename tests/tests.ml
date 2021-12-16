@@ -308,7 +308,7 @@ let new_lib_test =
          "Test Get Last N Moves" >:: test_get_last_n_moves;
        ]
 
-let gameOverBoard1 =
+let game_over_board1 =
   [
     [ 0; 1; 1; 1; 1; 0; 0 ];
     [ 0; 2; 2; 2; 0; 0; 0 ];
@@ -318,7 +318,7 @@ let gameOverBoard1 =
     [ 0; 0; 0; 0; 0; 0; 0 ];
   ]
 
-let gameOverBoard2 =
+let game_over_board2 =
   [
     [ 0; 1; 2; 0; 0; 0; 0 ];
     [ 0; 1; 2; 0; 0; 0; 0 ];
@@ -328,7 +328,7 @@ let gameOverBoard2 =
     [ 0; 0; 0; 0; 0; 0; 0 ];
   ]
 
-let gameOverBoard3 =
+let game_over_board3 =
   [
     [ 0; 1; 2; 1; 2; 0; 0 ];
     [ 0; 2; 1; 2; 2; 0; 0 ];
@@ -338,7 +338,7 @@ let gameOverBoard3 =
     [ 0; 0; 0; 0; 0; 0; 0 ];
   ]
 
-let gameOverBoard4 =
+let game_over_board4 =
   [
     [ 0; 1; 2; 2; 2; 2; 0 ];
     [ 0; 1; 1; 0; 0; 0; 0 ];
@@ -350,16 +350,16 @@ let gameOverBoard4 =
 
 let game_over_basic _ =
   set_player 1;
-  assert_equal (true, 1) @@ is_game_over gameOverBoard1 [];
+  assert_equal (true, 1) @@ is_game_over game_over_board1 [];
   set_player 1;
-  assert_equal (true, 1) @@ is_game_over gameOverBoard2 [];
+  assert_equal (true, 1) @@ is_game_over game_over_board2 [];
   set_player 1;
-  assert_equal (true, 1) @@ is_game_over gameOverBoard3 [];
+  assert_equal (true, 1) @@ is_game_over game_over_board3 [];
   set_player 2;
-  assert_equal (true, 2) @@ is_game_over gameOverBoard4 []
+  assert_equal (true, 2) @@ is_game_over game_over_board4 []
 
 (* Actual game played with myself *)
-let gameOverBoard5 =
+let game_over_board5 =
   [
     [ 1; 2; 1; 1; 2; 1; 1 ];
     [ 2; 2; 1; 2; 1; 2; 2 ];
@@ -369,7 +369,7 @@ let gameOverBoard5 =
     [ 0; 0; 0; 0; 0; 0; 2 ];
   ]
 
-let gameOverBoard6 =
+let game_over_board6 =
   [
     [ 1; 2; 1; 1; 2; 1; 1 ];
     [ 2; 2; 1; 2; 1; 2; 2 ];
@@ -379,7 +379,7 @@ let gameOverBoard6 =
     [ 0; 0; 0; 0; 0; 0; 0 ];
   ]
 
-let gameOverBoard7 =
+let game_over_board7 =
   [
     [ 1; 2; 1; 1; 2; 1; 1 ];
     [ 2; 2; 1; 2; 1; 2; 2 ];
@@ -391,15 +391,15 @@ let gameOverBoard7 =
 
 let game_over_complex _ =
   set_player 2;
-  assert_equal (true, 2) @@ is_game_over gameOverBoard5 [];
+  assert_equal (true, 2) @@ is_game_over game_over_board5 [];
   set_player 1;
-  assert_equal (true, 1) @@ is_game_over gameOverBoard6 [];
+  assert_equal (true, 1) @@ is_game_over game_over_board6 [];
   set_player 1;
-  assert_equal (true, 1) @@ is_game_over gameOverBoard7 [];
+  assert_equal (true, 1) @@ is_game_over game_over_board7 [];
   set_player 1;
   assert_equal (true, -1) @@ is_game_over empty full_h
 
-let moveBoard1 =
+let move_board1 =
   [
     [ 0; 1; 2; 2; 2; 0; 0 ];
     [ 0; 1; 1; 0; 0; 0; 0 ];
@@ -409,7 +409,7 @@ let moveBoard1 =
     [ 0; 2; 1; 0; 0; 0; 0 ];
   ]
 
-let moveBoard1' =
+let move_board1' =
   [
     [ 0; 1; 2; 2; 2; 0; 0 ];
     [ 0; 1; 1; 1; 0; 0; 0 ];
@@ -419,7 +419,7 @@ let moveBoard1' =
     [ 0; 2; 1; 0; 0; 0; 0 ];
   ]
 
-let moveBoard1'' =
+let move_board1'' =
   [
     [ 0; 1; 2; 2; 2; 0; 0 ];
     [ 0; 1; 1; 1; 2; 0; 0 ];
@@ -429,7 +429,7 @@ let moveBoard1'' =
     [ 0; 2; 1; 0; 0; 0; 0 ];
   ]
 
-let moveBoard2 =
+let move_board2 =
   [
     [ 0; 1; 2; 2; 2; 1; 0 ];
     [ 0; 1; 1; 0; 1; 2; 0 ];
@@ -441,25 +441,25 @@ let moveBoard2 =
 
 let make_move_invalid _ =
   set_player 1;
-  assert_equal None @@ make_Move moveBoard1 1;
+  assert_equal None @@ make_move move_board1 1;
   set_player 1;
-  assert_equal None @@ make_Move moveBoard1 2;
+  assert_equal None @@ make_move move_board1 2;
   set_player 1;
-  assert_equal None @@ make_Move moveBoard2 1;
+  assert_equal None @@ make_move move_board2 1;
   set_player 1;
-  assert_equal None @@ make_Move moveBoard2 2;
+  assert_equal None @@ make_move move_board2 2;
   set_player 1;
-  assert_equal None @@ make_Move moveBoard2 4;
+  assert_equal None @@ make_move move_board2 4;
   set_player 1;
-  assert_equal None @@ make_Move moveBoard2 5
+  assert_equal None @@ make_move move_board2 5
 
 let make_move_valid _ =
   set_player 1;
-  assert_equal (Some moveBoard1') @@ make_Move moveBoard1 3;
+  assert_equal (Some move_board1') @@ make_move move_board1 3;
   set_player 2;
-  assert_equal (Some moveBoard1'') @@ make_Move moveBoard1' 4
+  assert_equal (Some move_board1'') @@ make_move move_board1' 4
 
-let changeBoard1 =
+let change_board1 =
   [
     [ 0; 1; 2; 2; 2; 1; 0 ];
     [ 0; 1; 1; 0; 1; 2; 0 ];
@@ -469,7 +469,7 @@ let changeBoard1 =
     [ 0; 2; 1; 0; 2; 2; 0 ];
   ]
 
-let changeBoard1' =
+let change_board1' =
   [
     [ 0; 1; 2; 2; 2; 1; 0 ];
     [ 0; 1; 1; 0; 1; 2; 0 ];
@@ -479,7 +479,7 @@ let changeBoard1' =
     [ 0; 2; 1; 0; 2; 2; 0 ];
   ]
 
-let changeBoard1'' =
+let change_board1'' =
   [
     [ 0; 1; 2; 2; 2; 1; 0 ];
     [ 0; 1; 1; 0; 1; 2; 0 ];
@@ -490,8 +490,8 @@ let changeBoard1'' =
   ]
 
 let change_position _ =
-  assert_equal changeBoard1' @@ change_pos 0 0 (3, 3) 1 changeBoard1;
-  assert_equal changeBoard1'' @@ change_pos 0 0 (6, 5) 0 changeBoard1'
+  assert_equal change_board1' @@ change_pos 0 0 (3, 3) 1 change_board1;
+  assert_equal change_board1'' @@ change_pos 0 0 (6, 5) 0 change_board1'
 
 let set_player _ =
   set_player 1;
@@ -500,35 +500,35 @@ let set_player _ =
   assert_equal !curr_player @@ 2
 
 let test_invalid_position _ =
-  let invalid_get _ = get_pos (-1, -1) moveBoard1 in
+  let invalid_get _ = get_pos (-1, -1) move_board1 in
   assert_raises (Failure "Invalid position") @@ invalid_get;
-  let invalid_get' _ = get_pos (-1, 8) moveBoard1 in
+  let invalid_get' _ = get_pos (-1, 8) move_board1 in
   assert_raises (Failure "Invalid position") @@ invalid_get';
-  let invalid_get'' _ = get_pos (10, -1) moveBoard1 in
+  let invalid_get'' _ = get_pos (10, -1) move_board1 in
   assert_raises (Failure "Invalid position") @@ invalid_get'';
   let invalid_row _ = change_row 8 2 [ 1; 0; 0; 1; 2; 1; 1 ] in
   assert_raises (Failure "Invalid position") @@ invalid_row;
   let invalid_row' _ = change_row 20 2 [ 1; 0; 0; 1; 2; 1; 1 ] in
   assert_raises (Failure "Invalid position") @@ invalid_row';
-  let invalid_position _ = change_pos 0 0 (6, 7) 0 moveBoard1 in
+  let invalid_position _ = change_pos 0 0 (6, 7) 0 move_board1 in
   assert_raises (Failure "Invalid position") @@ invalid_position;
-  let invalid_position' _ = change_pos 0 0 (-2, 7) 0 moveBoard1 in
+  let invalid_position' _ = change_pos 0 0 (-2, 7) 0 move_board1 in
   assert_raises (Failure "Invalid position") @@ invalid_position';
-  let invalid_position'' _ = change_pos 0 0 (0, -3) 0 moveBoard1 in
+  let invalid_position'' _ = change_pos 0 0 (0, -3) 0 move_board1 in
   assert_raises (Failure "Invalid position") @@ invalid_position''
 
-let invalidBoard1 = [ [ 1; 0; 2 ]; [ 0; 0; 1 ]; [ 1; 1; 1 ] ]
+let invalid_board1 = [ [ 1; 0; 2 ]; [ 0; 0; 1 ]; [ 1; 1; 1 ] ]
 
-let invalidBoard2 = [ [ 1 ] ]
+let invalid_board2 = [ [ 1 ] ]
 
-let invalidBoard3 = [ [] ]
+let invalid_board3 = [ [] ]
 
 let test_invalid_board _ =
-  let invalid_board _ = change_pos 0 0 (4, 4) 2 invalidBoard1 in
+  let invalid_board _ = change_pos 0 0 (4, 4) 2 invalid_board1 in
   assert_raises (Failure "Invalid board") @@ invalid_board;
-  let invalid_board' _ = change_pos 0 0 (4, 4) 2 invalidBoard2 in
+  let invalid_board' _ = change_pos 0 0 (4, 4) 2 invalid_board2 in
   assert_raises (Failure "Invalid board") @@ invalid_board';
-  let invalid_board'' _ = change_pos 0 0 (4, 4) 2 invalidBoard3 in
+  let invalid_board'' _ = change_pos 0 0 (4, 4) 2 invalid_board3 in
   assert_raises (Failure "Invalid board") @@ invalid_board''
 
 let board_test =
