@@ -1,4 +1,4 @@
-# ocaml-final
+# Connect 4 N-gram AI
 The repository for our Functional Programming and Software Engineering course
 
 
